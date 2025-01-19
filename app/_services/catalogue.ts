@@ -1,4 +1,4 @@
-import type {Banner} from "app/_store/banners";
+import type {Banner} from "@/app/_store/banners";
 
 const transformCategories = (categories: Array<string | string[]>) => {
   categories.shift();
@@ -22,6 +22,8 @@ const transformProducts = (products: Array<string[]>, categories: Array<string |
   });
 }
 
+type BannerType = "top" | "middle" | "bottom";
+
 const transformBanners = (banners: Array<string[]>) => {
   banners.shift();
   return banners.reduce(
@@ -30,7 +32,7 @@ const transformBanners = (banners: Array<string[]>) => {
         return acc;
       }
 
-      const pos = curr.shift()!;
+      const pos = curr.shift() as BannerType;
       acc[pos] = curr;
 
       return acc;

@@ -1,8 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type Category = Array<string>;
-
 interface CategoriesState {
   categories: string[];
   setCategories: (categories: string[]) => void;
