@@ -1,1 +1,1 @@
-export {getCatalogue} from "./catalogue";
+export { getCatalogue } from "./catalogue";

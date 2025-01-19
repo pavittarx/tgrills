@@ -14,7 +14,14 @@ export const Header = () => {
       </Link>
       <div> Tandoori Grills </div>
       <div className="flex gap-1">
-        <Image src="/1.svg" width={36} height={36} alt="tandoori_grills logo" />
+        <a href="/cart">
+          <Image
+            src="/1.svg"
+            width={36}
+            height={36}
+            alt="tandoori_grills logo"
+          />
+        </a>
         <Image src="/2.svg" width={36} height={36} alt="tandoori_grills logo" />
       </div>
     </header>
