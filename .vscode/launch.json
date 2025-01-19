@@ -5,11 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Firefox: Attach",
+      "type": "firefox",
+      "port": 3000,
+      "request": "attach",
+      "webRoot": "${workspaceFolder}",
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "Chrome: Attach",
       "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:3000",
+      "port": 3000,
+      "request": "attach",
       "webRoot": "${workspaceFolder}"
-    }
+    },
   ]
 }
