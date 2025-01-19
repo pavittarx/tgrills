@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FC, useState } from "react";
+import { FC, MouseEvent, useState } from "react";
 import {motion } from "motion/react";
 
 type ProductProps = {
@@ -8,7 +8,7 @@ type ProductProps = {
   description: string;
   discount: string;
   price: string;
-  onClick: () => void;
+  onClick: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export const ProductCollapsed: FC<ProductProps> = ({

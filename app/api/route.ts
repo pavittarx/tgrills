@@ -8,7 +8,7 @@ const auth = new google.auth.GoogleAuth({
 
 const client = auth.fromJSON(JSON.parse(process.env.G_CREDS!));
 
-// ts-ignore
+// @ts-expect-error - a valid property, and works but ts throws error
 const sheets = google.sheets({
   auth: client,
   version: "v4",

@@ -82,9 +82,7 @@ export default function Home() {
                   : true
               )
               .map((product) => (
-                <Product key={product.name} {...product} onClick={(e: Event) => {
-                  console.log("clicked");
-
+                <Product key={product.name} {...product} onClick={e => {
                   e.stopPropagation();
                   handleAddProduct(product);
                 }} />

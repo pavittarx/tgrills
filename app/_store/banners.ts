@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 export type Banner = {
   top: string[];
@@ -22,7 +21,7 @@ export const useBanners = create<BannersState>()((set) => ({
   middle: [],
   bottom: [],
   setBanners: (banners: Banner) => set(banners),
-  setTop: (banners: string[]) => set({ banners }),
-  setMiddle: (banners: string[]) => set({ banners }),
-  setBottom: (banners: string[]) => set({ banners }),
+  setTop: (banners: string[]) => set({ ...banners, top: banners }),
+  setMiddle: (banners: string[]) => set({ ...banners, middle: banners }),
+  setBottom: (banners: string[]) => set({...banners, bottom: banners }),
 }));
