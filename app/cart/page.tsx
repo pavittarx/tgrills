@@ -33,7 +33,7 @@ export default function Page() {
           return (
             <div
               key={item.id}
-              className="w-full py-1 text-xs pl-6 grid grid-rows-1 grid-cols-[200px_80px_20px] gap-1 items-center justify-between"
+              className="w-full py-1 px-4 text-xs  grid grid-rows-1 grid-cols-[200px_80px_20px] gap-1 items-center justify-between"
             >
               <div className="col-span-1">{item.name}</div>
               <span className="inline-block col-span-1">
