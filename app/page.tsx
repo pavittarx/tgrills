@@ -1,15 +1,18 @@
 "use client";
-
-import { Header } from "./_shared/Header";
-import { Footer } from "./_shared/Footer";
 import { Carousel } from "./_shared/Carousel";
 import { Product } from "./_shared/Product";
-import { useProducts, useCart, useBanners, useCategories } from "./_store";
+import { useProducts, useBanners, useCategories } from "./_store";
 import { getCatalogue } from "./_services";
 
 import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { MotionConfig } from "motion/react";
+
+
+type Category = {
+  id: string;
+  name: string;
+}
 
 
 export default function Home() {
@@ -28,16 +31,12 @@ export default function Home() {
     (async () => {
       const {products, categories, banners} = await getCatalogue();
       setProducts(products);
-      setCategories(categories);
+      setCategories(categories.map((cat: Category) => cat.name));
       setBanners(banners);
     })();
   }, []);
 
-  const handleAddProduct = useCart((s) => s.addToCart);
-
   return (
-    <>
-      <Header />
       <main className="h-full">
         <section className="border border-gray-100 py-2 mb-1">
           {categories.map((category) => (
@@ -82,15 +81,11 @@ export default function Home() {
                   : true
               )
               .map((product) => (
-                <Product key={product.name} {...product} onClick={e => {
-                  e.stopPropagation();
-                  handleAddProduct(product);
-                }} />
+                <Product key={product.name} {...product} />
               ))}
           </MotionConfig>
         </div>
+        
       </main>
-      <Footer />
-    </>
   );
 }
