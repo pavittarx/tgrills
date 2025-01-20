@@ -7,13 +7,12 @@ import { getCatalogue } from "./_services";
 import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { MotionConfig } from "motion/react";
-
+import { MdClose } from "react-icons/md";
 
 type Category = {
   id: string;
   name: string;
 }
-
 
 export default function Home() {
   const products = useProducts((s) => s.products);
@@ -38,17 +37,20 @@ export default function Home() {
 
   return (
       <main className="h-full">
-        <section className="border border-gray-100 py-2 mb-1">
-          {categories.map((category) => (
-            <button
+        <section className="border border-gray-100 py-2 mb-1 flex">
+          {categories.map((category) => {
+            const isActive = filters.includes(category);
+
+            return <button
               key={category}
               className={classNames(
                 "px-3 py-1 mx-1 text-xs rounded-full hover:bg-gray-300",
                 "border",
-                filters.includes(category) && "bg-gray-100"
+                "flex items-center gap-1",
+                isActive && "bg-gray-100"
               )}
               onClick={() => {
-                if (!filters.includes(category)) {
+                if (!isActive) {
                   const _filters = [...filters, category];
                   setFilters(_filters);
                 } else {
@@ -57,8 +59,9 @@ export default function Home() {
               }}
             >
               {category}
+              {isActive && <div className="m-[0.5] p-0.5 border rounded-lg border-zinc-300"> <MdClose /> </div>}
             </button>
-          ))}
+          })}
         </section>
 
         <section className="m-1 h-[200px] w-full">
