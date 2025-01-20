@@ -20,7 +20,9 @@ type BannerType = "top" | "middle" | "bottom";
 
 const transformProducts = (products: Array<string[]>, categories: Array<string | string[]>) => {
   
-  const _products = products.map((product: Array<string>, index: number) => {
+  const _products = products.map((product: Array<string>, index: number) => { 
+    console.log(categories);
+
     return {
       id: index,
       name: product[0],
@@ -29,8 +31,8 @@ const transformProducts = (products: Array<string[]>, categories: Array<string |
       image: product[3],
       description: product[4],
       categories: categories
-        .filter((cat) => cat[1].includes(product[0]))
-        .map((cat) => cat[0]),
+        .filter((cat) => cat?.[1]?.includes(product[0]))
+        .map((cat) => cat?.[0]),
     };
   });
 
