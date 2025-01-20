@@ -1,39 +1,44 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import type { Product } from ".";
-
-type Cart = Product & { quantity: number };
+type Cart = { 
+  id: string,
+  quantity: number 
+};
 
 interface CartState {
   cart: Cart[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (product: Product) => void;
-  addQuantity: (product: Product) => void;
-  removeQuantity: (product: Product) => void;
+  addToCart: (productId: string) => void;
+  removeFromCart: (productId: string) => void;
+  addQuantity: (productId: string) => void;
+  removeQuantity: (productId: string) => void;
 }
 
-const addToCart = (product: Product) => {
+const addToCart = (productId: string) => {
   return (state: CartState) => {
+    if(state.cart.some(item => item.id === productId)) {
+      return state;
+    }
+
     return {
-      cart: [...state.cart, { ...product, quantity: 1 }],
+      cart: [...state.cart, { id: productId, quantity: 1 }],
     };
   };
 };
 
-const removeFromCart = (product: Product) => {
+const removeFromCart = (productId: string) => {
   return (state: CartState) => {
     return {
-      cart: state.cart.filter((item) => item.name !== product.name),
+      cart: state.cart.filter((item) => item.id !== productId),
     };
   };
 };
 
-const addQuantity = (product: Product) => {
+const addQuantity = (productId: string) => {
   return (state: CartState) => {
     return {
       cart: state.cart.map((item) =>
-        item.name === product.name
+        item.id === productId
           ? { ...item, quantity: item.quantity + 1 }
           : item
       ),
@@ -41,11 +46,11 @@ const addQuantity = (product: Product) => {
   };
 };
 
-const removeQuantity = (product: Product) => {
+const removeQuantity = (productId: string) => {
   return (state: CartState) => {
     return {
       cart: state.cart.map((item) =>
-        item.name === product.name
+        item.id === productId
           ? { ...item, quantity: item.quantity - 1 }
           : item
       ),
@@ -59,12 +64,12 @@ export const useCart = create<CartState>()(
   persist(
     (set) => ({
       cart: [] as Cart[],
-      addToCart: (product: Product) => {
-        set(addToCart(product));
+      addToCart: (productId: string) => {
+        set(addToCart(productId));
       },
-      removeFromCart: (product: Product) => set(removeFromCart(product)),
-      addQuantity: (product: Product) => set(addQuantity(product)),
-      removeQuantity: (product: Product) => set(removeQuantity(product)),
+      removeFromCart: (productId: string) => set(removeFromCart(productId)),
+      addQuantity: (productId: string) => set(addQuantity(productId)),
+      removeQuantity: (productId: string) => set(removeQuantity(productId)),
     }),
     { name: "cart" }
   )
