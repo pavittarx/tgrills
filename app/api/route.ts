@@ -21,7 +21,6 @@ type BannerType = "top" | "middle" | "bottom";
 const transformProducts = (products: Array<string[]>, categories: Array<string | string[]>) => {
   
   const _products = products.map((product: Array<string>, index: number) => { 
-    console.log(categories);
 
     return {
       id: index,
