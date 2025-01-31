@@ -91,13 +91,10 @@ export default function Home() {
         >
           {products
             .filter((product) => {
-              console.log(product.categories);
-
               if (filters.length > 0) {
                 const res = filters.every((cat) =>
                   product.categories.includes(cat)
                 );
-                console.log(res);
 
                 return res;
               }
