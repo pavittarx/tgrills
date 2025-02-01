@@ -1,7 +1,7 @@
 "use client";
 import { Carousel } from "./_shared/Carousel";
 import { Product } from "./_shared/Product";
-import { useProducts, useBanners, useCategories } from "./_store";
+import { useProducts, useBanners, useCategories } from "../_store";
 import { getCatalogue } from "./_services";
 
 import { useState, useEffect } from "react";

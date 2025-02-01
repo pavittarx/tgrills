@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 
 import type { FC } from "react";
 import type { UseFormRegister, FieldErrors } from "react-hook-form";
-import type { AddressInput } from "@/app/_types/Address";
+import type { AddressInput } from "@/_types/Address";
 
 type OrderInputProps = {
   register: UseFormRegister<AddressInput>;

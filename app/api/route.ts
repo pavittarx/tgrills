@@ -1,5 +1,5 @@
 import { google, } from "googleapis";
-import type {Banner} from "@/app/_store/banners";
+import type {Banner} from "@/_store/banners";
 
 const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];;
 

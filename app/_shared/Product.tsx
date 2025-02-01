@@ -3,8 +3,8 @@ import { FC } from "react";
 import { motion } from "motion/react";
 
 import { Quantity } from "./Quantity";
-import { useCart } from "../_store";
-import type { Product as ProductProps } from "../_store";
+import { useCart } from "../../_store";
+import type { Product as ProductProps } from "../../_store";
 import classNames from "classnames";
 
 export const Product: FC<ProductProps> = ({
