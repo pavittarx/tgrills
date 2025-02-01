@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type Cart = { 
-  id: string,
-  quantity: number 
+type Cart = {
+  id: string;
+  quantity: number;
 };
 
 interface CartState {
@@ -16,7 +16,7 @@ interface CartState {
 
 const addToCart = (productId: string) => {
   return (state: CartState) => {
-    if(state.cart.some(item => item.id === productId)) {
+    if (state.cart.some((item) => item.id === productId)) {
       return state;
     }
 
@@ -38,9 +38,7 @@ const addQuantity = (productId: string) => {
   return (state: CartState) => {
     return {
       cart: state.cart.map((item) =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
       ),
     };
   };
@@ -50,14 +48,11 @@ const removeQuantity = (productId: string) => {
   return (state: CartState) => {
     return {
       cart: state.cart.map((item) =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
+        item.id === productId ? { ...item, quantity: item.quantity - 1 } : item
       ),
     };
   };
-}
-
+};
 
 // Store Slice
 export const useCart = create<CartState>()(

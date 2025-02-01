@@ -1,15 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Product = {
-  id: string;
-  name: string;
-  image: string;
-  description: string;
-  discount: string;
-  price: string;
-  categories: string[];
-};
+import type { Product } from "@/_types";
 
 interface ProductState {
   products: Product[];

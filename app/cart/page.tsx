@@ -1,47 +1,30 @@
 "use client";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import classNames from "classnames";
+import { SubmitHandler, useForm } from "react-hook-form";
 
-import { sup } from "./../_sdk/supabase";
-import { useCart, useProducts } from "../_store";
-import { Quantity } from "../_shared/Quantity";
+import { calculateOrderTotals } from "@/_methods/cart";
+import { sup } from "@/_sdk/supabase";
+import { useCart, useProducts } from "@/_store";
+import type { AddressInput } from "@/_types/Address";
+import { CartItems } from "@/app/_shared/CartItems";
 import { OrderInputs } from "@/app/_shared/OrderInputs";
-
-import type { AddressInput } from "@/app/_types/Address";
 
 const ctaClasses = "bg-yellow-300 text-yellow-900 p-1 px-12 mt-12 block m-auto";
 
 export default function Page() {
   const [checkout, setCheckout] = useState<boolean>(false);
+  const cart = useCart((s) => s.cart);
+  const products = useProducts((s) => s.products);
 
   const { register, handleSubmit, formState } = useForm<AddressInput>();
   const { errors } = formState;
 
-  const cart = useCart((s) => s.cart);
-  const products = useProducts((s) => s.products);
-  const handleAdd = useCart((s) => s.addQuantity);
-  const handleRemove = useCart((s) => s.removeQuantity);
-  const handleDelete = useCart((s) => s.removeFromCart);
-
-  const _cart = cart.map((item) => {
-    const product = products.find((p) => p.id === item.id)!;
-    return {
-      ...item,
-      ...product,
-    };
-  });
-
-  const subtotal = _cart.reduce(
-    (a, c) => a + c.quantity * parseFloat(c.discount || c.price),
-    0
-  );
-  const taxes = subtotal * 0.05;
-  const total = subtotal + taxes;
+  const totals = calculateOrderTotals(cart, products);
 
   // Handling Form Submission
-  const onSubmit = async (data, event) => {
-    event.preventDefault();
+  const onSubmit: SubmitHandler<AddressInput> = async (data, event) => {
+    event?.preventDefault();
 
     const order = {
       name: data.name,
@@ -81,32 +64,9 @@ export default function Page() {
 
       <form method="post" onSubmit={handleSubmit(onSubmit)}>
         {checkout && <OrderInputs register={register} errors={errors} />}
+        <CartItems />
 
         <section className="py-2">
-          {_cart.map((item) => {
-            return (
-              <div
-                key={item.id}
-                className="w-full py-1 px-4 text-xs  grid grid-rows-1 grid-cols-[50vw_20vw_15vw] gap-1 items-center justify-between"
-              >
-                <div className="col-span-1">{item.name}</div>
-                <span className="inline-block col-span-1">
-                  <Quantity
-                    quantity={item.quantity}
-                    onAdd={() => {
-                      handleAdd(item.id);
-                    }}
-                    onRemove={() => handleRemove(item.id)}
-                    onDelete={() => handleDelete(item.id)}
-                  />
-                </span>
-                <div className="col-span-1 self-place-end text-right">
-                  {item.quantity * parseFloat(item.discount || item.price)}
-                </div>
-              </div>
-            );
-          })}
-
           <div
             className={classNames(
               "border-t-2 mt-2 text-sm",
@@ -115,11 +75,11 @@ export default function Page() {
             )}
           >
             <div className="col-start-2 text-right">Subtotal</div>
-            <div className="col-start-3 text-right">{subtotal}</div>
+            <div className="col-start-3 text-right">{totals.subtotal}</div>
             <div className="col-start-2 text-right">Tax</div>
-            <div className="col-start-3 text-right">{taxes}</div>
+            <div className="col-start-3 text-right">{totals.taxes}</div>
             <div className="col-start-2 text-right">Total</div>
-            <div className="col-start-3 text-right">{total}</div>
+            <div className="col-start-3 text-right">{totals.total}</div>
           </div>
 
           {!checkout && (
