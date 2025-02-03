@@ -31,6 +31,8 @@ export default function RootLayout({
       >
         <Header />
         {children}
+        {/* Adjust Footer Height */}
+        <div className="h-[200px] w-max-[100vw]"></div>
         <Footer />
       </body>
     </html>
