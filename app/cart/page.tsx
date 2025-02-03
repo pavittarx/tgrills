@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { oneLine } from "common-tags";
 
 import { mergeCartAndProducts, calculateOrderTotals } from "@/_methods/cart";
 import { sup } from "@/_sdk/supabase";
@@ -13,7 +14,13 @@ import {
   CartTotals,
 } from "@/app/_shared/Cart";
 
-const ctaClasses = "bg-yellow-300 text-yellow-900 p-1 px-12 mt-12 block m-auto";
+const ctaClasses = oneLine`
+            bg-yellow-300 text-yellow-900 
+            m-auto
+            p-1 px-12 
+            mt-12 
+            block
+        `;
 
 export default function Page() {
   const [checkout, setCheckout] = useState<boolean>(false);
