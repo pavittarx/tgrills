@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { oneLine } from "common-tags";
+import { ShoppingCart } from "lucide-react";
 
 import { mergeCartAndProducts, calculateOrderTotals } from "@/_methods/cart";
 import { sup } from "@/_sdk/supabase";
@@ -28,7 +29,7 @@ export default function Page() {
   const products = useProducts((s) => s.products);
 
   const { register, handleSubmit, formState } = useForm<AddressInput>();
-  const { errors, isSubmitting, isValid } = formState;
+  const { errors, isSubmitting } = formState;
 
   const totals = calculateOrderTotals(cart, products);
 
@@ -77,7 +78,17 @@ export default function Page() {
 
   return (
     <main className="mx-2 my-4">
-      <h1 className="mx-2 pl-4 pb-1 font-semibold border-b grid-cols-4">
+      <h1
+        className={oneLine`
+                flex items-center
+                gap-2
+                pl-4 pb-2 
+                mb-2  
+                font-semibold 
+                border-b 
+                `}
+      >
+        <ShoppingCart />
         {!checkout ? "Cart" : "Checkout"}
       </h1>
 
@@ -102,7 +113,7 @@ export default function Page() {
           {checkout && (
             <button
               type="submit"
-              disabled={isSubmitting || !isValid}
+              disabled={isSubmitting}
               className={ctaClasses}
             >
               Order
