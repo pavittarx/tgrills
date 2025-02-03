@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { FC } from "react";
 import { motion } from "motion/react";
-
 import { Quantity } from "./Quantity";
 import { useCart } from "../../_store";
 import type { Product as ProductProps } from "@/_types";
