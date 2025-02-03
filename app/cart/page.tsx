@@ -1,14 +1,17 @@
 "use client";
 import { useState } from "react";
-import classNames from "classnames";
 import { SubmitHandler, useForm } from "react-hook-form";
 
-import { calculateOrderTotals } from "@/_methods/cart";
+import { mergeCartAndProducts, calculateOrderTotals } from "@/_methods/cart";
 import { sup } from "@/_sdk/supabase";
 import { useCart, useProducts } from "@/_store";
 import type { AddressInput } from "@/_types/Address";
-import { CartItems } from "@/app/_shared/CartItems";
-import { OrderInputs } from "@/app/_shared/OrderInputs";
+import {
+  CartItems,
+  OrderInputs,
+  NoItemsInCart,
+  CartTotals,
+} from "@/app/_shared/Cart";
 
 const ctaClasses = "bg-yellow-300 text-yellow-900 p-1 px-12 mt-12 block m-auto";
 
@@ -18,7 +21,7 @@ export default function Page() {
   const products = useProducts((s) => s.products);
 
   const { register, handleSubmit, formState } = useForm<AddressInput>();
-  const { errors } = formState;
+  const { errors, isSubmitting, isValid } = formState;
 
   const totals = calculateOrderTotals(cart, products);
 
@@ -31,30 +34,39 @@ export default function Page() {
       phone: data.phone,
       email: data.email || "",
       address: data.address,
-      products: _cart,
-      subtotal: subtotal,
+      products: mergeCartAndProducts(cart, products),
+      subtotal: totals.subtotal,
       discount: 0,
-      taxes: taxes,
-      total: total,
+      taxes: totals.taxes,
+      total: totals.total,
       status: "PENDING",
       paid: false,
       done: false,
     };
 
-    const { data: uData, error: uError } = await sup.auth.signInWithPassword({
-      phone: data.phone,
-      password: "defpass",
-    });
-
-    if (uError) {
-      await sup.auth.signUp({
+    try {
+      const { error: uError } = await sup.auth.signInWithPassword({
         phone: data.phone,
         password: "defpass",
       });
-    }
 
-    const { data: dx, error } = await sup.from("guest_orders").insert(order);
+      if (uError) {
+        await sup.auth.signUp({
+          phone: data.phone,
+          password: "defpass",
+        });
+      }
+
+      // Save Orders
+      await sup.from("guest_orders").insert(order);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  if (cart.length == 0) {
+    return <NoItemsInCart />;
+  }
 
   return (
     <main className="mx-2 my-4">
@@ -65,23 +77,9 @@ export default function Page() {
       <form method="post" onSubmit={handleSubmit(onSubmit)}>
         {checkout && <OrderInputs register={register} errors={errors} />}
         <CartItems />
+        <CartTotals />
 
-        <section className="py-2">
-          <div
-            className={classNames(
-              "border-t-2 mt-2 text-sm",
-              "mt-1 p-2 mx-2 w-full",
-              "grid grid-rows-3 grid-cols-[50vw_20vw_15vw] gap-1"
-            )}
-          >
-            <div className="col-start-2 text-right">Subtotal</div>
-            <div className="col-start-3 text-right">{totals.subtotal}</div>
-            <div className="col-start-2 text-right">Tax</div>
-            <div className="col-start-3 text-right">{totals.taxes}</div>
-            <div className="col-start-2 text-right">Total</div>
-            <div className="col-start-3 text-right">{totals.total}</div>
-          </div>
-
+        <section aria-label="cta-button">
           {!checkout && (
             <button
               className={ctaClasses}
@@ -93,13 +91,17 @@ export default function Page() {
               Checkout
             </button>
           )}
-        </section>
 
-        {checkout && (
-          <button type="submit" className={ctaClasses}>
-            Order
-          </button>
-        )}
+          {checkout && (
+            <button
+              type="submit"
+              disabled={isSubmitting || !isValid}
+              className={ctaClasses}
+            >
+              Order
+            </button>
+          )}
+        </section>
       </form>
     </main>
   );
