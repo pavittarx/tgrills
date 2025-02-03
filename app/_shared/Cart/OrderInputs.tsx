@@ -31,7 +31,6 @@ export const OrderInputs: FC<OrderInputProps> = ({ register, errors }) => {
           maxLength: 30,
         })}
       />
-
       <div className={errorClasses}> {errors.name?.message}</div>
 
       <input
@@ -44,12 +43,16 @@ export const OrderInputs: FC<OrderInputProps> = ({ register, errors }) => {
           maxLength: 10,
         })}
       />
+      <div className={errorClasses}> {errors.phone?.message}</div>
+
       <input
         type="text"
         placeholder="Email"
         className={inputClasses}
         {...register("email")}
       />
+      <div className={errorClasses}> {errors.email?.message}</div>
+
       <textarea
         className={textareaClass}
         placeholder="Address*"
@@ -59,6 +62,7 @@ export const OrderInputs: FC<OrderInputProps> = ({ register, errors }) => {
           maxLength: 500,
         })}
       ></textarea>
+      <div className={errorClasses}> {errors.address?.message}</div>
     </motion.section>
   );
 };
