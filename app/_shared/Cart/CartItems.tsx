@@ -1,6 +1,6 @@
 import { useCart, useProducts } from "@/_store";
 import { mergeCartAndProducts } from "@/_methods/cart";
-import { Quantity } from "./Quantity";
+import { Quantity } from "../Quantity";
 
 export const CartItems = () => {
   const cart = useCart((s) => s.cart);
