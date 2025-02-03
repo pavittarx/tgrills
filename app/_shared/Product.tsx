@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 
 import { Quantity } from "./Quantity";
 import { useCart } from "../../_store";
-import type { Product as ProductProps } from "../../_store";
+import type { Product as ProductProps } from "@/_types";
 import classNames from "classnames";
 
 export const Product: FC<ProductProps> = ({
@@ -25,7 +25,9 @@ export const Product: FC<ProductProps> = ({
   const handleMinus = useCart((s) => s.removeQuantity);
   const handleDelete = useCart((s) => s.removeFromCart);
 
-  const percentOff: number = discount ? (100 - Math.floor((parseInt(discount) / parseInt(price))*100)) : 0;
+  const percentOff: number = discount
+    ? 100 - Math.floor((parseInt(discount) / parseInt(price)) * 100)
+    : 0;
 
   return (
     <motion.div

@@ -19,7 +19,7 @@ export const OrderInputs: FC<OrderInputProps> = ({ register, errors }) => {
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: [0, 1] }}
-      className={classNames("pt-5 pl-2 mb-2")}
+      className={classNames("pl-2 mb-2")}
     >
       <input
         type="text"
