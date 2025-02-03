@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type Address = {
-  id: string;
   name: string;
   phone: string;
   email?: string;
@@ -10,21 +9,21 @@ export type Address = {
 };
 
 interface AddressState {
-  details: Address[];
+  address: Address;
   addAddress: (address: Address) => void;
 }
 
 const addAddress = (address: Address) => {
-  return (state: AddressState) => {
-    return { details: [...state.details, address] };
+  return () => {
+    return { address };
   };
 };
 
-export const useAddresses = create<AddressState>()(
+export const useAddress = create<AddressState>()(
   persist(
     (set) => ({
-      details: [] as Address[],
-      addAddress: (addr: Address) => set(addAddress(addr)),
+      address: {} as Address,
+      addAddress: (address: Address) => set(addAddress(address)),
     }),
     { name: "addresses" }
   )
