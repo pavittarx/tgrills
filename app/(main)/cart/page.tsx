@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { oneLine } from "common-tags";
 import { ShoppingCart } from "lucide-react";
@@ -23,7 +22,6 @@ const ctaClasses = oneLine`
         `;
 
 export default function Page() {
-  const router = useRouter();
   const [checkout, setCheckout] = useState<boolean>(false);
   const cart = useCart((s) => s.cart);
   const handleAddAddress = useAddress((s) => s.addAddress);
@@ -32,9 +30,7 @@ export default function Page() {
   const { errors, isSubmitting } = formState;
 
   // Handling Form Submission
-  const onSubmit: SubmitHandler<AddressInput> = async (data, event) => {
-    event?.preventDefault();
-
+  const onSubmit: SubmitHandler<AddressInput> = async (data) => {
     handleAddAddress({
       name: data.name,
       phone: data.phone,
@@ -42,7 +38,8 @@ export default function Page() {
       address: data.address,
     });
 
-    router.push("/cart/review");
+    // Nextjs Router breaks on Client
+    window.location.assign("/cart/review");
   };
 
   if (cart.length == 0) {
