@@ -4,7 +4,7 @@ import { AdminLogin } from "../_shared/AdminLogin";
 import { OrderDashboard } from "../_shared/DashboardOrders/OrdersTable";
 
 const DashboardPage = () => {
-  const { isLoading, isLoggedIn, refetch, logout } = useSupabaseUser();
+  const { isLoading, isLoggedIn, refetch } = useSupabaseUser();
 
   if (isLoading) {
     return "Loading...";
