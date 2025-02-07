@@ -62,7 +62,7 @@ const OrderReviewPage = () => {
       // Save Orders
       await sup.from("guest_orders").insert(order);
     } catch (error) {
-      console.log(error);
+      console.error(error);
 
       throw new Error("Error Occurred while processing order.", {
         cause: error,
