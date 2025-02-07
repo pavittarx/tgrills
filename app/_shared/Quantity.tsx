@@ -16,10 +16,12 @@ type ButtonProps = {
 const Button: FC<ButtonProps> = ({ onClick, children }) => {
   return (
     <button
+      type="button"
       className="h-[30px] w-[30px] bg-yellow-50 text-yellow-900 shadow shadow-yellow-100 rounded"
-      onClick={e => {
+      onClick={(e) => {
         e.stopPropagation();
-        onClick();}}
+        onClick();
+      }}
     >
       {children}
     </button>
