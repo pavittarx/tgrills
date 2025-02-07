@@ -11,6 +11,7 @@ export type Address = {
 interface AddressState {
   address: Address;
   addAddress: (address: Address) => void;
+  clear: () => void;
 }
 
 const addAddress = (address: Address) => {
@@ -24,6 +25,7 @@ export const useAddress = create<AddressState>()(
     (set) => ({
       address: {} as Address,
       addAddress: (address: Address) => set(addAddress(address)),
+      clear: () => set({ address: {} as Address }),
     }),
     { name: "addresses" }
   )

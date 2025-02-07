@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { Phone, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,15 +21,33 @@ import { Separator } from "@/components/ui/separator";
 
 import { sup } from "@/_sdk/supabase";
 import { useAddress, useCart, useProducts } from "@/_store";
+import { useHydrated } from "@/app/_hooks";
 import { calculateOrderTotals, mergeCartAndProducts } from "@/_methods/cart";
+import { useEffect } from "react";
 
 const OrderReviewPage = () => {
+  const router = useRouter();
+  const hydrated = useHydrated();
   const cart = useCart((s) => s.cart);
   const products = useProducts((s) => s.products);
   const address = useAddress((s) => s.address);
 
   const items = mergeCartAndProducts(cart, products);
   const totals = calculateOrderTotals(cart, products);
+
+  const clearAddress = useAddress((s) => s.clear);
+  const clearCart = useCart((s) => s.clear);
+
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    // Navigate back to Cart if phone is not available.
+    if (!address?.phone) {
+      router.push("/cart");
+    }
+  }, [hydrated]);
 
   const handleAddOrder = async () => {
     const order = {
@@ -60,7 +79,17 @@ const OrderReviewPage = () => {
         });
       }
       // Save Orders
-      await sup.from("guest_orders").insert(order);
+      const { data, error } = await sup
+        .from("guest_orders")
+        .insert(order)
+        .select("id");
+
+      if (error) {
+        console.error("Error while creating order.");
+        return false;
+      }
+
+      return data[0].id;
     } catch (error) {
       console.error(error);
 
@@ -70,10 +99,34 @@ const OrderReviewPage = () => {
     }
   };
 
-  const handleCallOrder = () => {
-    handleAddOrder();
+  const handleCallOrder = async () => {
+    const result = await handleAddOrder();
+
+    if (!result) {
+      return;
+    }
+
+    window.location.href = `tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER}`;
+
+    clearCart();
+    clearAddress();
   };
-  const handleWhatsAppOrder = () => {};
+  const handleWhatsAppOrder = async () => {
+    const orderId = await handleAddOrder();
+
+    const message = encodeURIComponent(
+      `Hi, I'd like to confirm my order.
+       OrderId: #${orderId}
+      `
+    );
+    window.open(
+      `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`,
+      "_blank"
+    );
+
+    clearCart();
+    clearAddress();
+  };
 
   return (
     <>
