@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { BadgeVariant } from "@/_types/badge";
 import {
   Table,
   TableBody,
@@ -78,7 +79,7 @@ export function OrderDashboard() {
   }, []);
 
   const handleStatusUpdate = async (orderId: number, newStatus: string) => {
-    const { data, error } = await sup
+    const { error } = await sup
       .from("guest_orders")
       .update({ status: newStatus })
       .eq("id", orderId);
@@ -178,7 +179,7 @@ export function OrderDashboard() {
                   <DropdownMenuTrigger asChild>
                     <div>
                       <Badge
-                        variant={order.status.toLowerCase() as any}
+                        variant={order.status.toLowerCase() as BadgeVariant}
                         className="cursor-pointer"
                       >
                         {order.status}
