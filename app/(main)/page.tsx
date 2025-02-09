@@ -7,7 +7,6 @@ import { getCatalogue } from "@/app/_services";
 import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { motion, MotionConfig } from "motion/react";
-import { X } from "lucide-react";
 
 type Category = {
   id: string;
@@ -38,42 +37,63 @@ export default function Home() {
   return (
     <main className="h-full">
       <section className="mx-2 py-2 mb-1 flex overflow-x-scroll no-scrollbar">
-        {categories.map((category) => {
-          const isActive = filters.includes(category);
+        {/* Active Filters */}
+        {filters.map((category) => (
+          <motion.div key={category} className="mr-1">
+            <motion.button
+              animate={true}
+              transition={{ duration: 1 }}
+              className={classNames(
+                "px-3 py-1 mx-0.5 h-8 rounded-full select-none",
+                "min-w-14 text-center",
+                "whitespace-nowrap",
+                "border border-yellow-300",
+                "flex items-center justify-center",
+                "text-xs font-semibold",
+                "bg-yellow-50 text-yellow-900",
+                "hover:bg-yellow-100"
+              )}
+              onClick={() => {
+                // Remove this specific filter
+                setFilters(filters.filter((f) => f !== category));
+              }}
+            >
+              <div className="flex items-center justify-center w-full">
+                <span>{category}</span>
+              </div>
+            </motion.button>
+          </motion.div>
+        ))}
 
-          return (
-            <motion.div key={category}>
+        {/* Available Categories */}
+        {categories
+          .filter((category) => !filters.includes(category))
+          .map((category) => (
+            <motion.div key={category} className="mr-2">
               <motion.button
                 animate={true}
                 transition={{ duration: 1 }}
                 className={classNames(
-                  "px-2 py-1 mx-1 h-8 text-xs rounded-full select-none",
-                  "min-w-14 text-center hover:bg-gray-50",
+                  "px-3 py-1 mx-1 h-8 rounded-full select-none",
+                  "min-w-14 text-center",
                   "whitespace-nowrap",
-                  "border block",
-                  "flex items-center gap-1 flex-1",
-                  isActive && "bg-gray-100"
+                  "border border-secondary/50",
+                  "flex items-center justify-center",
+                  "text-xs font-medium",
+                  "bg-secondary/30 text-secondary-foreground",
+                  "hover:bg-secondary/40"
                 )}
                 onClick={() => {
-                  if (!isActive) {
-                    const _filters = [...filters, category];
-                    setFilters(_filters);
-                  } else {
-                    setFilters(filters.filter((f) => f !== category));
-                  }
+                  const _filters = [...filters, category];
+                  setFilters(_filters);
                 }}
               >
-                <span className="w-full">{category}</span>
-                {isActive && (
-                  <div className="m-[0.5] p-0.5 border rounded-lg border-zinc-300">
-                    {" "}
-                    <X />{" "}
-                  </div>
-                )}
-              </motion.button>{" "}
+                <div className="flex items-center justify-center w-full">
+                  <span>{category}</span>
+                </div>
+              </motion.button>
             </motion.div>
-          );
-        })}
+          ))}
       </section>
 
       <section className="m-1 h-[200px] w-full">
