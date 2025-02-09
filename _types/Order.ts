@@ -18,7 +18,7 @@ export interface Order {
   discount: number;
   taxes: number;
   total: number;
-  status: "PENDING" | "APPROVED" | "PREPARING" | "WAY" | "OUT" | "DELIVERED";
+  status: "PENDING" | "APPROVED" | "PREPARING" | "WAY" | "OUT" | "DELIVERED" | "CANCELLED";
   paid: boolean;
   done: boolean;
   phone: number;
