@@ -40,6 +40,32 @@ export default {
   				DEFAULT: 'hsl(var(--destructive))',
   				foreground: 'hsl(var(--destructive-foreground))'
   			},
+        status: {
+          pending: {
+            DEFAULT: 'hsl(var(--status-pending))',
+            foreground: 'hsl(var(--status-pending-foreground))',
+          },
+          approved: {
+            DEFAULT: 'hsl(var(--status-approved))',
+            foreground: 'hsl(var(--status-approved-foreground))',
+          },
+          preparing: {
+            DEFAULT: 'hsl(var(--status-preparing))',
+            foreground: 'hsl(var(--status-preparing-foreground))',
+          },
+          way: {
+            DEFAULT: 'hsl(var(--status-way))',
+            foreground: 'hsl(var(--status-way-foreground))',
+          },
+          out: {
+            DEFAULT: 'hsl(var(--status-out))',
+            foreground: 'hsl(var(--status-out-foreground))',
+          },
+          delivered: {
+            DEFAULT: 'hsl(var(--status-delivered))',
+            foreground: 'hsl(var(--status-delivered-foreground))',
+          },
+        },
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',

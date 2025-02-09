@@ -10,6 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupeeIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import { sup } from "@/_sdk/supabase";
 import { Order } from "@/_types/Order";
@@ -19,6 +25,7 @@ export function OrderDashboard() {
   const [orders, setOrders] = useState<Order[] | null>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingStatus, setEditingStatus] = useState<number | null>(null);
 
   const fetchOrders = async () => {
     const { data, error } = await sup
@@ -37,6 +44,21 @@ export function OrderDashboard() {
   useEffect(() => {
     fetchOrders();
   }, []);
+
+  const handleStatusUpdate = async (orderId: number, newStatus: string) => {
+    const { data, error } = await sup
+      .from("guest_orders")
+      .update({ status: newStatus })
+      .eq("id", orderId);
+
+    if (error) {
+      alert(`${orderId}: Error while updating order status.`);
+      return;
+    }
+
+    setEditingStatus(null);
+    fetchOrders();
+  };
 
   const handleStatusChange = async (
     orderId: number,
@@ -93,12 +115,39 @@ export function OrderDashboard() {
                 <IndianRupeeIcon height={16} width={16} />{" "}
                 {order.total.toFixed(2)}
               </TableCell>
-              <TableCell>
-                <Badge
-                  variant={order.status === "PENDING" ? "secondary" : "default"}
-                >
-                  {order.status}
-                </Badge>
+              <TableCell onClick={(e) => e.stopPropagation()}>
+                <DropdownMenu open={editingStatus === order.id} onOpenChange={(open: boolean) => setEditingStatus(open ? order.id : null)}>
+                  <DropdownMenuTrigger asChild>
+                    <div>
+                      <Badge
+                        variant={order.status.toLowerCase() as any}
+                        className="cursor-pointer"
+                      >
+                        {order.status}
+                      </Badge>
+                    </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "PENDING")}>
+                      <Badge variant="pending">PENDING</Badge>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "APPROVED")}>
+                      <Badge variant="approved">APPROVED</Badge>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "PREPAIRING")}>
+                      <Badge variant="prepairing">PREPAIRING</Badge>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "WAY")}>
+                      <Badge variant="way">WAY</Badge>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "OUT")}>
+                      <Badge variant="out">OUT</Badge>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "DELIVERED")}>
+                      <Badge variant="delivered">DELIVERED</Badge>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
               <TableCell>
                 <Button
