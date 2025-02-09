@@ -1,3 +1,13 @@
+export type OrderStatus = 
+  | "PENDING" 
+  | "APPROVED"
+  | "PREPAIRING"
+  | "WAY"
+  | "OUT"
+  | "DELIVERED"
+  | "CANCELLED";
+
+
 export interface Order {
   id: number;
   created_at: string;
@@ -18,7 +28,7 @@ export interface Order {
   discount: number;
   taxes: number;
   total: number;
-  status: "PENDING" | "APPROVED" | "PREPARING" | "WAY" | "OUT" | "DELIVERED" | "CANCELLED";
+  status: OrderStatus;
   paid: boolean;
   done: boolean;
   phone: number;

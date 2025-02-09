@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { BadgeVariant } from "@/_types/badge";
 import {
   Table,
   TableBody,
@@ -21,7 +20,9 @@ import {
 
 import { sup } from "@/_sdk/supabase";
 import { Order } from "@/_types/Order";
+import { BadgeVariant, OrderStatus } from "@/_types";
 import { OrderDetailsModal } from "./OrderDetailsModal";
+import {  getOrderStatusText } from "@/app/_shared/utils/orderStatus";
 
 export function OrderDashboard() {
   const [orders, setOrders] = useState<Order[] | null>([]);
@@ -179,34 +180,48 @@ export function OrderDashboard() {
                   <DropdownMenuTrigger asChild>
                     <div>
                       <Badge
-                        variant={order.status.toLowerCase() as BadgeVariant}
+                        variant={order?.status?.toLowerCase() as BadgeVariant}
                         className="cursor-pointer"
                       >
-                        {order.status}
+                        {getOrderStatusText(order.status as OrderStatus)}
                       </Badge>
                     </div>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "PENDING")}>
-                      <Badge variant="pending">PENDING</Badge>
+                      <Badge variant={"pending"}>
+                        {getOrderStatusText("PENDING")}
+                      </Badge>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "APPROVED")}>
-                      <Badge variant="approved">APPROVED</Badge>
+                      <Badge variant={"approved"}>
+                        {getOrderStatusText("APPROVED")}
+                      </Badge>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "PREPAIRING")}>
-                      <Badge variant="prepairing">PREPAIRING</Badge>
+                      <Badge variant={"prepairing"}>
+                        {getOrderStatusText("PREPAIRING")}
+                      </Badge>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "WAY")}>
-                      <Badge variant="way">WAY</Badge>
+                      <Badge variant={"way"}>
+                        {getOrderStatusText("WAY")}
+                      </Badge>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "OUT")}>
-                      <Badge variant="out">OUT</Badge>
+                      <Badge variant={"out"}>
+                        {getOrderStatusText("OUT")}
+                      </Badge>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "DELIVERED")}>
-                      <Badge variant="delivered">DELIVERED</Badge>
+                      <Badge variant={"delivered"}>
+                        {getOrderStatusText("DELIVERED")}
+                      </Badge>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "CANCELLED")}>
-                      <Badge variant="cancelled">CANCELLED</Badge>
+                      <Badge variant={"cancelled"}>
+                        {getOrderStatusText("CANCELLED")}
+                      </Badge>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

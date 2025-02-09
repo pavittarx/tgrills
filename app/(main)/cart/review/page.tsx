@@ -89,6 +89,12 @@ const OrderReviewPage = () => {
         return false;
       }
 
+      // Clear cart and address after successful order
+      clearCart();
+      clearAddress();
+
+      // Redirect to order details page
+      router.push(`/orders/${data[0].id}`);
       return data[0].id;
     } catch (error) {
       console.error(error);

@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Order } from "@/_types/Order";
+import { getOrderStatusText } from "@/app/_shared/utils/orderStatus";
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -92,7 +93,7 @@ export function OrderDetailsModal({
         <div className="mt-4">
           <h3 className="text-lg font-semibold mb-2">Order Status</h3>
           <p>
-            <strong>Status:</strong> {order.status}
+            <strong>Status:</strong> {getOrderStatusText(order.status)}
           </p>
           <p>
             <strong>Paid:</strong> {order.paid ? "Yes" : "No"}
