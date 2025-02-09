@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { MdOutlineAdd, MdOutlineRemove, MdOutlineDelete } from "react-icons/md";
+import { Plus, Minus, Trash2 } from "lucide-react";
 
 type QuantityProps = {
   quantity: number;
@@ -37,14 +37,14 @@ export const Quantity: FC<QuantityProps> = ({
   return (
     <div className="inline-flex items-center gap-1.5">
       <Button onClick={quantity > 1 ? onRemove : onDelete}>
-        {quantity > 1 && <MdOutlineRemove className="w-4 h-4" />}
-        {quantity == 1 && <MdOutlineDelete className="w-4 h-4" />}
+        {quantity > 1 && <Minus className="w-4 h-4" />}
+        {quantity == 1 && <Trash2 className="w-4 h-4" />}
       </Button>
       <span className="inline-flex items-center justify-center text-sm font-medium w-6">
         {quantity}
       </span>
       <Button onClick={onAdd}>
-        <MdOutlineAdd className="w-4 h-4" />
+        <Plus className="w-4 h-4" />
       </Button>
     </div>
   );

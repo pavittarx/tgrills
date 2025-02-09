@@ -7,7 +7,7 @@ import { getCatalogue } from "@/app/_services";
 import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { motion, MotionConfig } from "motion/react";
-import { MdClose } from "react-icons/md";
+import { X } from "lucide-react";
 
 type Category = {
   id: string;
@@ -67,7 +67,7 @@ export default function Home() {
                 {isActive && (
                   <div className="m-[0.5] p-0.5 border rounded-lg border-zinc-300">
                     {" "}
-                    <MdClose />{" "}
+                    <X />{" "}
                   </div>
                 )}
               </motion.button>{" "}
