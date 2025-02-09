@@ -1,6 +1,6 @@
 import { oneLine } from "common-tags";
 import Link from "next/link";
-import { MdHome } from "react-icons/md";
+import { Home } from "lucide-react";
 
 export const NoItemsInCart = () => {
   return (
@@ -25,7 +25,7 @@ export const NoItemsInCart = () => {
             mt-2 
             hover:opacity-50`}
         >
-          <MdHome />
+          <Home className="w-4 h-4" />
           <span>Home</span>
         </span>
       </Link>
