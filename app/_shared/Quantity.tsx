@@ -17,7 +17,7 @@ const Button: FC<ButtonProps> = ({ onClick, children }) => {
   return (
     <button
       type="button"
-      className="h-[30px] w-[30px] bg-yellow-50 text-yellow-900 shadow shadow-yellow-100 rounded"
+      className="h-7 w-7 bg-yellow-50 text-yellow-900 hover:bg-yellow-100 transition-colors rounded-md inline-flex items-center justify-center"
       onClick={(e) => {
         e.stopPropagation();
         onClick();
@@ -35,16 +35,16 @@ export const Quantity: FC<QuantityProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="text-base flex gap-1 items-center">
+    <div className="inline-flex items-center gap-1.5">
       <Button onClick={quantity > 1 ? onRemove : onDelete}>
-        {quantity > 1 && <MdOutlineRemove className="inline-block" />}
-        {quantity == 1 && <MdOutlineDelete className="inline-block" />}
+        {quantity > 1 && <MdOutlineRemove className="w-4 h-4" />}
+        {quantity == 1 && <MdOutlineDelete className="w-4 h-4" />}
       </Button>
-      <span className="bg-white p-1 text-xs text-center w-[22px]">
+      <span className="inline-flex items-center justify-center text-sm font-medium w-6">
         {quantity}
       </span>
       <Button onClick={onAdd}>
-        <MdOutlineAdd className="inline-block" />
+        <MdOutlineAdd className="w-4 h-4" />
       </Button>
     </div>
   );
