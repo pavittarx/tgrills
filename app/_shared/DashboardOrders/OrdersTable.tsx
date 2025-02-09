@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupeeIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -100,7 +101,13 @@ export function OrderDashboard() {
           {orders?.map((order) => (
             <TableRow
               key={order.id}
-              className="cursor-pointer hover:bg-gray-100"
+              className={cn(
+                "cursor-pointer transition-colors",
+                order.paid && order.done ? "bg-green-50 hover:bg-green-100" :
+                order.paid ? "bg-blue-50 hover:bg-blue-100" :
+                order.done ? "bg-yellow-50 hover:bg-yellow-100" :
+                "hover:bg-gray-100"
+              )}
               onClick={() => {
                 setSelectedOrder(order);
                 setIsModalOpen(true);
@@ -146,30 +153,39 @@ export function OrderDashboard() {
                     <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "DELIVERED")}>
                       <Badge variant="delivered">DELIVERED</Badge>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleStatusUpdate(order.id, "CANCELLED")}>
+                      <Badge variant="cancelled">CANCELLED</Badge>
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
               <TableCell>
                 <Button
-                  variant="outline"
+                  variant={order.paid ? "outline" : "default"}
                   size="sm"
-                  className="mr-2"
+                  className={cn(
+                    "mr-2",
+                    order.paid && "bg-blue-100 hover:bg-blue-200 border-blue-200"
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleStatusChange(order.id, "paid", !order.paid);
                   }}
                 >
-                  {order.paid ? "Paid" : "Mark Paid"}
+                  {order.paid ? "💰 Paid" : "Mark Paid"}
                 </Button>
                 <Button
-                  variant="outline"
+                  variant={order.done ? "outline" : "default"}
                   size="sm"
+                  className={cn(
+                    order.done && "bg-yellow-100 hover:bg-yellow-200 border-yellow-200"
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleStatusChange(order.id, "done", !order.done);
                   }}
                 >
-                  {order.done ? "Done" : "Mark Done"}
+                  {order.done ? "✅ Done" : "Mark Done"}
                 </Button>
               </TableCell>
             </TableRow>
