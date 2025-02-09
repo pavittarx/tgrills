@@ -28,22 +28,53 @@ export function OrderDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingStatus, setEditingStatus] = useState<number | null>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const fetchOrders = async () => {
-    const { data, error } = await sup
-      .from("guest_orders")
-      .select("*")
-      .order("id", { ascending: false });
+    try {
+      setIsLoading(true);
+      setError(null);
+      const { data, error: fetchError } = await sup
+        .from("guest_orders")
+        .select("*")
+        .order("id", { ascending: false });
 
-    if (error) {
-      console.error("Error while fetching orders.");
-      return;
+      if (fetchError) throw new Error(fetchError.message);
+      
+      setOrders(data);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch orders');
+    } finally {
+      setIsLoading(false);
     }
-
-    setOrders(data);
   };
 
   useEffect(() => {
     fetchOrders();
+
+    // Subscribe to real-time changes
+    const channel = sup
+      .channel('guest_orders_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'guest_orders'
+        },
+        (payload) => {
+          console.log('Change received!', payload);
+          fetchOrders(); // Refresh the orders list
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription on unmount
+    return () => {
+      channel.unsubscribe();
+    };
   }, []);
 
   const handleStatusUpdate = async (orderId: number, newStatus: string) => {
@@ -86,6 +117,26 @@ export function OrderDashboard() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Order Dashboard</h1>
+      {error && (
+        <div className="p-4 mb-4 text-red-800 bg-red-100 rounded-lg">
+          <p>{error}</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2"
+            onClick={() => fetchOrders()}
+          >
+            Refresh
+          </Button>
+        </div>
+      )}
+
+      {isLoading && !orders?.length ? (
+        <div className="p-8 text-center">
+          <p className="text-gray-500">Loading orders...</p>
+        </div>
+      ) : null}
+
       <Table>
         <TableHeader>
           <TableRow>
