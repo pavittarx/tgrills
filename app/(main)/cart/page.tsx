@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { oneLine } from "common-tags";
-import { ShoppingCart } from "lucide-react";
-import classNames from "classnames";
+import { ShoppingCart, CreditCard, CheckCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 import { useCart, useAddress } from "@/_store";
 import type { AddressInput } from "@/_types/Address";
@@ -13,14 +13,6 @@ import {
   NoItemsInCart,
   CartTotals,
 } from "@/app/_shared/Cart";
-
-const ctaClasses = oneLine`
-            bg-yellow-300 text-yellow-900 
-            m-auto
-            p-1 px-12 
-            mt-12 
-            block
-        `;
 
 export default function Page() {
   const [checkout, setCheckout] = useState<boolean>(false);
@@ -80,31 +72,28 @@ export default function Page() {
         <CartItems />
         <CartTotals />
 
-        <section aria-label="cta-button">
+        <section aria-label="cta-button" className="mt-4 flex-col gap-1 w-full select-none">
           {!checkout && (
-            <button
-              className={ctaClasses}
+            <Button 
               onClick={(e) => {
                 e.preventDefault();
                 setCheckout(true);
               }}
+              className="w-full bg-yellow-300 text-yellow-800 hover:bg-yellow-200 rounded-lg"
             >
-              Checkout
-            </button>
+              <CreditCard className="mr-2 h-4 w-4" /> Proceed to Checkout
+            </Button>
           )}
 
           {checkout && (
-            <button
+            <Button 
               type="submit"
+              className="w-full bg-yellow-300 text-yellow-800 hover:bg-yellow-200 rounded-lg"
               disabled={isSubmitting || !isDirty || !isValid}
-              className={classNames(
-                ctaClasses,
-                (isSubmitting || !isDirty || !isValid) && 
-                "opacity-50 cursor-not-allowed"
-              )}
             >
-              {isSubmitting ? "Processing..." : "Place Order"}
-            </button>
+              <CheckCircle className="mr-2 h-4 w-4" /> 
+              {isSubmitting ? "Processing..." : "Confirm Order"}
+            </Button>
           )}
         </section>
       </form>
