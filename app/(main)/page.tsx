@@ -7,6 +7,7 @@ import { getCatalogue } from "@/app/_services";
 import { useState, useEffect } from "react";
 import classNames from "classnames";
 import { motion, MotionConfig } from "motion/react";
+import { RefreshCcw } from "lucide-react";
 
 type Category = {
   id: string;
@@ -33,6 +34,10 @@ export default function Home() {
       setBanners(banners);
     })();
   }, []);
+
+  const clearAllFilters = () => {
+    setFilters([]);
+  };
 
   return (
     <main className="h-full">
@@ -101,29 +106,67 @@ export default function Home() {
       </section>
 
       <div className="grid grid-cols-1 gap-2 mb-4">
-        <MotionConfig
-          transition={{
-            duration: 5,
-            ease: "easeInOut",
-            type: "spring",
-            stiffness: 100,
-          }}
-        >
-          {products
-            .filter((product) => {
-              if (filters.length > 0) {
-                const res = filters.every((cat) =>
-                  product.categories.includes(cat)
-                );
+        {products
+          .filter((product) => {
+            if (filters.length > 0) {
+              const res = filters.every((cat) =>
+                product.categories.includes(cat)
+              );
 
-                return res;
-              }
-              return true;
-            })
-            .map((product) => (
-              <Product key={product.name} {...product} />
-            ))}
-        </MotionConfig>
+              return res;
+            }
+            return true;
+          })
+          .length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="bg-secondary/10 p-6 rounded-lg max-w-md">
+              <h2 className="text-lg font-semibold text-secondary-foreground mb-3">
+                No Items Match Your Filters
+              </h2>
+              <p className="text-sm text-secondary-foreground/70 mb-4">
+                Try removing some filters or exploring other categories to find what you&apos;re looking for.
+              </p>
+              {filters.length > 0 && (
+                <button 
+                  onClick={clearAllFilters}
+                  className={classNames(
+                    "px-4 py-2 rounded-full",
+                    "bg-secondary/30 text-secondary-foreground",
+                    "hover:bg-secondary/40",
+                    "flex items-center justify-center mx-auto"
+                  )}
+                >
+                  <RefreshCcw className="h-4 w-4 mr-2" />
+                  Clear All Filters
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <MotionConfig
+            transition={{
+              duration: 5,
+              ease: "easeInOut",
+              type: "spring",
+              stiffness: 100,
+            }}
+          >
+            {products
+              .filter((product) => {
+                if (filters.length > 0) {
+                  const res = filters.every((cat) =>
+                    product.categories.includes(cat)
+                  );
+
+                  return res;
+                }
+                return true;
+              })
+              .map((product) => (
+                <Product key={product.name} {...product} />
+              ))}
+          </MotionConfig>
+        )}
       </div>
     </main>
   );
