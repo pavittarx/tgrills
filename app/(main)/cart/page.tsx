@@ -3,6 +3,7 @@ import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { oneLine } from "common-tags";
 import { ShoppingCart } from "lucide-react";
+import classNames from "classnames";
 
 import { useCart, useAddress } from "@/_store";
 import type { AddressInput } from "@/_types/Address";
@@ -26,20 +27,32 @@ export default function Page() {
   const cart = useCart((s) => s.cart);
   const handleAddAddress = useAddress((s) => s.addAddress);
 
-  const { register, handleSubmit, formState } = useForm<AddressInput>();
-  const { errors, isSubmitting } = formState;
+  const { register, handleSubmit, formState, trigger } = useForm<AddressInput>({ 
+    mode: 'onBlur',
+    criteriaMode: 'all'
+  });
+  const { errors, isSubmitting, isDirty, isValid } = formState;
 
   // Handling Form Submission
   const onSubmit: SubmitHandler<AddressInput> = async (data) => {
-    handleAddAddress({
-      name: data.name,
-      phone: data.phone,
-      email: data.email || "",
-      address: data.address,
-    });
+    try {
+      // Validate all fields before submission
+      const isValid = await trigger();
+      if (!isValid) return;
 
-    // Nextjs Router breaks on Client
-    window.location.assign("/cart/review");
+      handleAddAddress({
+        name: data.name.trim(),
+        phone: data.phone.trim(),
+        email: data.email?.trim() || "",
+        address: data.address.trim(),
+      });
+
+      // Nextjs Router breaks on Client
+      window.location.assign("/cart/review");
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   if (cart.length == 0) {
@@ -83,10 +96,14 @@ export default function Page() {
           {checkout && (
             <button
               type="submit"
-              disabled={isSubmitting}
-              className={ctaClasses}
+              disabled={isSubmitting || !isDirty || !isValid}
+              className={classNames(
+                ctaClasses,
+                (isSubmitting || !isDirty || !isValid) && 
+                "opacity-50 cursor-not-allowed"
+              )}
             >
-              Order
+              {isSubmitting ? "Processing..." : "Place Order"}
             </button>
           )}
         </section>
