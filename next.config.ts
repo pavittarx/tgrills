@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{
       protocol: 'https',
-      hostname: 'static.wixstatic.com',
+      hostname: 'stcyfdgqzywrxgjzmary.supabase.co',
       // port: '',
       // pathname: '',
       // search: ''
