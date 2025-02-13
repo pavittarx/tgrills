@@ -6,14 +6,15 @@ import { useCart } from "../../_store";
 import type { Product as ProductProps } from "@/_types";
 import classNames from "classnames";
 import { Plus } from "lucide-react";
+import { sup } from "@/_sdk/supabase";
 
 export const Product: FC<ProductProps> = ({
   id,
   name,
-  image,
   description,
   discount,
   price,
+  image,
 }) => {
   const quantity =
     useCart((s) =>
@@ -28,6 +29,9 @@ export const Product: FC<ProductProps> = ({
   const percentOff: number = discount
     ? 100 - Math.floor((parseInt(discount) / parseInt(price)) * 100)
     : 0;
+    
+  // Get the public URL using Supabase SDK
+  const publicImageUrl = sup.storage.from('store').getPublicUrl(`${image}`).data.publicUrl;
 
   return (
     <motion.div
@@ -37,10 +41,10 @@ export const Product: FC<ProductProps> = ({
     >
       <Image
         className="border rounded-lg max-w-[150px] max-h-[150px] object-cover"
-        src={image}
+        src={publicImageUrl}
         alt={name}
-        height={150}
-        width={150}
+        width={120}
+        height={120}
       />
       <div className="w-full">
         <h2 className="text-lg font-semibold text-gray-900">{name}</h2>
