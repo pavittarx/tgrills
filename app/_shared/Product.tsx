@@ -6,7 +6,7 @@ import { useCart } from "../../_store";
 import type { Product as ProductProps } from "@/_types";
 import classNames from "classnames";
 import { Plus } from "lucide-react";
-import { sup } from "@/_sdk/supabase";
+import { getPublicImageUrl } from "@/_sdk/supabase";
 
 export const Product: FC<ProductProps> = ({
   id,
@@ -29,9 +29,6 @@ export const Product: FC<ProductProps> = ({
   const percentOff: number = discount
     ? 100 - Math.floor((parseInt(discount) / parseInt(price)) * 100)
     : 0;
-    
-  // Get the public URL using Supabase SDK
-  const publicImageUrl = sup.storage.from('store').getPublicUrl(`${image}`).data.publicUrl;
 
   return (
     <motion.div
@@ -41,7 +38,7 @@ export const Product: FC<ProductProps> = ({
     >
       <Image
         className="border rounded-lg max-w-[150px] max-h-[150px] object-cover"
-        src={publicImageUrl}
+        src={getPublicImageUrl(image)}
         alt={name}
         width={120}
         height={120}
@@ -54,7 +51,9 @@ export const Product: FC<ProductProps> = ({
           <div>
             {discount && (
               <div className="flex items-center gap-2">
-                <span className="text-base font-medium text-yellow-900">₹{discount}</span>
+                <span className="text-base font-medium text-yellow-900">
+                  ₹{discount}
+                </span>
                 <span className="bg-yellow-50 text-yellow-700 text-xs font-medium px-2 py-0.5 rounded-full">
                   {percentOff}% off
                 </span>
@@ -63,8 +62,8 @@ export const Product: FC<ProductProps> = ({
             <div
               className={classNames(
                 "text-sm mt-1",
-                discount 
-                  ? "line-through text-gray-400" 
+                discount
+                  ? "line-through text-gray-400"
                   : "font-medium text-yellow-900"
               )}
             >
