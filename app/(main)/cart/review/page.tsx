@@ -91,10 +91,6 @@ const OrderReviewPage = () => {
         return false;
       }
 
-      // Clear cart and address after successful order
-      clearCart();
-      clearAddress();
-
       if(trigger == "call"){
         trackCall();
       }else if(trigger == "whatsapp"){
@@ -102,8 +98,12 @@ const OrderReviewPage = () => {
       }
 
       // Redirect to order details page
-      router.push(`/orders/${data[0].id}`);
-      return data[0].id;
+      const url = `/orders/${data[0].id}`;
+      router.push(url);
+
+      // Clear cart and address after successful order
+      clearCart();
+      clearAddress();
     } catch (error) {
       console.error(error);
 
