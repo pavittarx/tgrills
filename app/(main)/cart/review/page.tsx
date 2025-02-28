@@ -57,7 +57,7 @@ const OrderReviewPage = () => {
       address: address.address,
       products: mergeCartAndProducts(cart, products),
       subtotal: totals.subtotal,
-      discount: 0,
+      discount: totals.discount,
       taxes: totals.taxes,
       total: totals.total,
       status: "PENDING",
@@ -117,6 +117,7 @@ const OrderReviewPage = () => {
     clearCart();
     clearAddress();
   };
+  
   const handleWhatsAppOrder = async () => {
     const orderId = await handleAddOrder();
 
@@ -125,10 +126,13 @@ const OrderReviewPage = () => {
        OrderId: #${orderId}
       `
     );
-    window.open(
-      `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`,
-      "_blank"
-    );
+
+    setTimeout(() => {
+      window.open(
+        `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`,
+        "_blank"
+      );
+    }, 3000)
 
     clearCart();
     clearAddress();

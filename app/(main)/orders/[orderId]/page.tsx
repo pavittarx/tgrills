@@ -161,8 +161,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
           </div>
 
           <Separator />
-
-          {/* Order Items */}
+          
           <div>
             <h3 className="font-semibold text-gray-900 mb-4">Order Items</h3>
             <Table>

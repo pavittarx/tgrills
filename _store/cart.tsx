@@ -2,20 +2,20 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type Cart = {
-  id: string;
+  id: number;
   quantity: number;
 };
 
 interface CartState {
   cart: Cart[];
-  addToCart: (productId: string) => void;
-  removeFromCart: (productId: string) => void;
-  addQuantity: (productId: string) => void;
-  removeQuantity: (productId: string) => void;
+  addToCart: (productId: number) => void;
+  removeFromCart: (productId: number) => void;
+  addQuantity: (productId: number) => void;
+  removeQuantity: (productId: number) => void;
   clear: () => void;
 }
 
-const addToCart = (productId: string) => {
+const addToCart = (productId: number) => {
   return (state: CartState) => {
     if (state.cart.some((item) => item.id === productId)) {
       return state;
@@ -27,7 +27,7 @@ const addToCart = (productId: string) => {
   };
 };
 
-const removeFromCart = (productId: string) => {
+const removeFromCart = (productId: number) => {
   return (state: CartState) => {
     return {
       cart: state.cart.filter((item) => item.id !== productId),
@@ -35,7 +35,7 @@ const removeFromCart = (productId: string) => {
   };
 };
 
-const addQuantity = (productId: string) => {
+const addQuantity = (productId: number) => {
   return (state: CartState) => {
     return {
       cart: state.cart.map((item) =>
@@ -45,7 +45,7 @@ const addQuantity = (productId: string) => {
   };
 };
 
-const removeQuantity = (productId: string) => {
+const removeQuantity = (productId: number) => {
   return (state: CartState) => {
     return {
       cart: state.cart.map((item) =>
@@ -60,12 +60,12 @@ export const useCart = create<CartState>()(
   persist(
     (set) => ({
       cart: [] as Cart[],
-      addToCart: (productId: string) => {
+      addToCart: (productId: number) => {
         set(addToCart(productId));
       },
-      removeFromCart: (productId: string) => set(removeFromCart(productId)),
-      addQuantity: (productId: string) => set(addQuantity(productId)),
-      removeQuantity: (productId: string) => set(removeQuantity(productId)),
+      removeFromCart: (productId: number) => set(removeFromCart(productId)),
+      addQuantity: (productId: number) => set(addQuantity(productId)),
+      removeQuantity: (productId: number) => set(removeQuantity(productId)),
       clear: () => set({ cart: [] as Cart[] }),
     }),
     { name: "cart" }
