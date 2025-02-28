@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "../_shared/Header";
 import { Footer } from "../_shared/Footer";
 import { MobileOnlyNotification } from "@/app/_shared/MobileOnly";
+import { ErrorBoundary } from "@/app/_shared/ErrorBoundary";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -30,13 +31,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MobileOnlyNotification>
-          <Header />
-          {children}
-          {/* Adjust Footer Height */}
-          <div className="h-[200px] w-max-[100vw]"></div>
-          <Footer />
-        </MobileOnlyNotification>
+        <ErrorBoundary>
+          <MobileOnlyNotification>
+            <Header />
+            {children}
+            {/* Adjust Footer Height */}
+            <div className="h-[200px] w-max-[100vw]"></div>
+            <Footer />
+          </MobileOnlyNotification>
+        </ErrorBoundary>
       </body>
     </html>
   );
