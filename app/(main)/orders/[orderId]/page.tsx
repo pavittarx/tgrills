@@ -42,6 +42,7 @@ interface OrderDetails {
   discount: number;
   taxes: number;
   total: number;
+  deliveryFee?: number;
   status: 
     | "PENDING" 
     | "APPROVED"
@@ -247,9 +248,15 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
               </div>
             )}
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Tax</span>
+              <span className="text-gray-600">Taxes (SGST/IGST) </span>
               <span>{formatCurrency(order.taxes)}</span>
             </div>
+            {(order.deliveryFee ?? 0) > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Delivery Fee</span>
+                <span>{formatCurrency(order.deliveryFee || 0)}</span>
+              </div>
+            )}
             <Separator />
             <div className="flex justify-between font-medium">
               <span>Total</span>
