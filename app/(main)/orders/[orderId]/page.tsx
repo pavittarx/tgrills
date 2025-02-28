@@ -21,6 +21,8 @@ import { Separator } from "@/components/ui/separator";
 import { sup } from "@/_sdk/supabase";
 import { Badge } from "@/components/ui/badge";
 import { getOrderStatusText } from "@/app/_shared/utils/orderStatus";
+import { useHydrated } from "@/app/_hooks";
+import {useTracker} from "@/_store";
 import { BadgeVariant, OrderStatus } from "@/_types";
 
 interface OrderDetails {
@@ -73,11 +75,30 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
+const triggerCall = async () => {
+  window.location.href = `tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER}`;
+};
+
+const triggerWhatsapp = (orderId: string) => {
+  const message = encodeURIComponent(
+    `Hi,\nI'd like to confirm my order #${orderId}.\nhttps://tandoorigrills.in/orders/${orderId}\n`
+  );
+
+  setTimeout(() => {
+    window.open(
+      `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`,
+      // "_blank"
+    );
+  }, 3000)
+}
+
 export default function OrderPage({ params }: { params: Promise<{ orderId: string }> }) {
+  const hydrated = useHydrated();
   const {orderId} = use(params);
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isCallClicked, isWhatsappClicked, clear } = useTracker();
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -101,6 +122,22 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
 
     fetchOrder();
   }, [orderId]);
+
+  useEffect(() => {
+    if(!hydrated || !orderId){
+      return;
+    }
+
+    if(isCallClicked){
+      triggerCall();
+    }
+
+    if(isWhatsappClicked){
+      triggerWhatsapp(orderId);
+    }
+
+    clear();
+  }, [hydrated, orderId])
 
   if (loading) {
     return (

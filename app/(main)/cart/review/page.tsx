@@ -20,7 +20,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { sup } from "@/_sdk/supabase";
-import { useAddress, useCart, useProducts } from "@/_store";
+import { useAddress, useCart, useProducts, useTracker } from "@/_store";
 import { useHydrated } from "@/app/_hooks";
 import { calculateOrderTotals, mergeCartAndProducts } from "@/_methods/cart";
 import { useEffect } from "react";
@@ -31,6 +31,8 @@ const OrderReviewPage = () => {
   const cart = useCart((s) => s.cart);
   const products = useProducts((s) => s.products);
   const address = useAddress((s) => s.address);
+  const trackWhatsapp = useTracker((s) => s.whatsAppClicked);
+  const trackCall = useTracker((s) => s.callClicked);
 
   const items = mergeCartAndProducts(cart, products);
   const totals = calculateOrderTotals(cart, products);
@@ -49,7 +51,7 @@ const OrderReviewPage = () => {
     }
   }, [hydrated]);
 
-  const handleAddOrder = async () => {
+  const handleOrder = async (trigger: "call" | "whatsapp") => {
     const order = {
       name: address.name,
       phone: address.phone,
@@ -93,6 +95,12 @@ const OrderReviewPage = () => {
       clearCart();
       clearAddress();
 
+      if(trigger == "call"){
+        trackCall();
+      }else if(trigger == "whatsapp"){
+        trackWhatsapp();
+      }
+
       // Redirect to order details page
       router.push(`/orders/${data[0].id}`);
       return data[0].id;
@@ -103,39 +111,6 @@ const OrderReviewPage = () => {
         cause: error,
       });
     }
-  };
-
-  const handleCallOrder = async () => {
-    const result = await handleAddOrder();
-
-    if (!result) {
-      return;
-    }
-
-    window.location.href = `tel:${process.env.NEXT_PUBLIC_PHONE_NUMBER}`;
-
-    clearCart();
-    clearAddress();
-  };
-  
-  const handleWhatsAppOrder = async () => {
-    const orderId = await handleAddOrder();
-
-    const message = encodeURIComponent(
-      `Hi, I'd like to confirm my order.
-       OrderId: #${orderId}
-      `
-    );
-
-    setTimeout(() => {
-      window.open(
-        `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`,
-        "_blank"
-      );
-    }, 3000)
-
-    clearCart();
-    clearAddress();
   };
 
   return (
@@ -214,14 +189,14 @@ const OrderReviewPage = () => {
 
           <CardFooter className="flex-col gap-1 w-full select-none">
             <Button
-              onClick={handleCallOrder}
+              onClick={() => handleOrder("call")}
               className="w-full bg-yellow-300 text-yellow-800 hover:bg-yellow-200"
             >
               <Phone className="mr-2 h-4 w-4" /> Order via Call
             </Button>
             <br />
             <Button
-              onClick={handleWhatsAppOrder}
+              onClick={() => handleOrder("whatsapp")}
               className="w-full bg-yellow-300 text-yellow-800 hover:bg-yellow-200"
             >
               <MessageSquare className="mr-2 h-4 w-4" /> Order via WhatsApp

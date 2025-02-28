@@ -3,3 +3,4 @@ export { useCategories } from "./categories";
 export { useBanners } from "./banners";
 export { useCart } from "./cart";
 export { useAddress } from "./address";
+export { useTracker } from "./tracker";
