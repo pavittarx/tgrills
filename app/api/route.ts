@@ -29,11 +29,12 @@ const transformProducts = (
       discount: product[2],
       image: product[3],
       description: product[4],
+      isPublished: product[5]?.toLowerCase() === "yes" ? true : false,
       categories: categories
         .filter((cat) => cat?.[1]?.includes(product[0]))
         .map((cat) => cat?.[0]),
     };
-  });
+  }).filter((product) => product.isPublished);
 
   // Remove the header row
   _products.shift();
@@ -74,7 +75,7 @@ const transformBanners = (banners: Array<string[]>) => {
 export async function GET() {
   const prodRes = await sheets.spreadsheets.values.get({
     spreadsheetId: process.env.SHEET_ID,
-    range: "products!A:E",
+    range: "products!A:F",
   });
 
   const catRes = await sheets.spreadsheets.values.get({
