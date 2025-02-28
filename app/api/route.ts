@@ -35,9 +35,7 @@ const transformProducts = (
         .map((cat) => cat?.[0]),
     };
   }).filter((product) => product.isPublished);
-
-  // Remove the header row
-  _products.shift();
+  
   return _products;
 };
 
