@@ -34,11 +34,11 @@ const DashboardPage = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 container mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button onClick={() => setIsCreateOrderModalOpen(true)}>
-          Create New Order
+        <Button className="mr-2" onClick={() => setIsCreateOrderModalOpen(true)}>
+          New Order
         </Button>
       </div>
 

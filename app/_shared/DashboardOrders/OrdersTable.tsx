@@ -7,27 +7,30 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { IndianRupeeIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { IndianRupeeIcon, Edit, DollarSign, CheckCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { sup } from "@/_sdk/supabase";
 import { Order } from "@/_types/Order";
 import { BadgeVariant, OrderStatus } from "@/_types";
 import { OrderDetailsModal } from "./OrderDetailsModal";
-import {  getOrderStatusText } from "@/app/_shared/utils/orderStatus";
+import { CreateOrderModal } from "./CreateOrderModal";
+import { getOrderStatusText } from "@/app/_shared/utils/orderStatus";
 
 export function OrderDashboard() {
   const [orders, setOrders] = useState<Order[] | null>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [editingStatus, setEditingStatus] = useState<number | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -99,26 +102,30 @@ export function OrderDashboard() {
     field: "paid" | "done",
     value: boolean
   ) => {
-    const { data, error } = await sup
-      .from("guest_orders")
-      .update({
-        [field]: value,
-      })
-      .eq("id", orderId);
+    try {
+      const { error } = await sup
+        .from("guest_orders")
+        .update({
+          [field]: value,
+        })
+        .eq("id", orderId);
 
-    if (error) {
-      alert(`${orderId}: Error while updating order.`);
-      return;
+      if (error) throw error;
+
+      fetchOrders();
+    } catch (err) {
+      console.error(`Error updating order ${field} status:`, err);
+      alert(`Failed to update order ${field} status`);
     }
+  };
 
-    console.log(data, error);
-
-    fetchOrders();
+  const handleEditOrder = (order: Order) => {
+    setEditingOrder(order);
+    setIsEditModalOpen(true);
   };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Order Dashboard</h1>
       {error && (
         <div className="p-4 mb-4 text-red-800 bg-red-100 rounded-lg">
           <p>{error}</p>
@@ -176,7 +183,7 @@ export function OrderDashboard() {
                 {order.total.toFixed(2)}
               </TableCell>
               <TableCell onClick={(e) => e.stopPropagation()}>
-                <DropdownMenu open={editingStatus === order.id} onOpenChange={(open: boolean) => setEditingStatus(open ? order.id : null)}>
+              <DropdownMenu open={!order.done && editingStatus === order.id} onOpenChange={(open: boolean) => setEditingStatus(open ? order.id : null)}>
                   <DropdownMenuTrigger asChild>
                     <div>
                       <Badge
@@ -226,44 +233,70 @@ export function OrderDashboard() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
-              <TableCell>
-                <Button
-                  variant={order.paid ? "outline" : "default"}
-                  size="sm"
-                  className={cn(
-                    "mr-2",
-                    order.paid && "bg-blue-100 hover:bg-blue-200 border-blue-200"
-                  )}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStatusChange(order.id, "paid", !order.paid);
-                  }}
-                >
-                  {order.paid ? "💰 Paid" : "Mark Paid"}
-                </Button>
-                <Button
-                  variant={order.done ? "outline" : "default"}
-                  size="sm"
-                  className={cn(
-                    order.done && "bg-yellow-100 hover:bg-yellow-200 border-yellow-200"
-                  )}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleStatusChange(order.id, "done", !order.done);
-                  }}
-                >
-                  {order.done ? "✅ Done" : "Mark Done"}
-                </Button>
+              <TableCell onClick={(e) => e.stopPropagation()}>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => handleEditOrder(order)}
+                    title="Edit Order"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={order.paid ? "outline" : "ghost"}
+                    size="icon"
+                    className={cn(
+                      order.paid && "bg-blue-100 hover:bg-blue-200"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusChange(order.id, "paid", !order.paid);
+                    }}
+                    title={order.paid ? "Unmark Paid" : "Mark Paid"}
+                  >
+                    <DollarSign className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant={order.done ? "outline" : "ghost"}
+                    size="icon"
+                    className={cn(
+                      order.done && "bg-green-100 hover:bg-green-200"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleStatusChange(order.id, "done", !order.done);
+                    }}
+                    title={order.done ? "Unmark Done" : "Mark Done"}
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                  </Button>
+                </div>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Order Details Modal */}
       {selectedOrder && (
         <OrderDetailsModal
-          order={selectedOrder}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
+          order={selectedOrder}
+        />
+      )}
+
+      {/* Edit Order Modal */}
+      {editingOrder && (
+        <CreateOrderModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setEditingOrder(null);
+          }}
+          existingOrder={editingOrder}
+          onOrderCreated={fetchOrders}
         />
       )}
     </div>

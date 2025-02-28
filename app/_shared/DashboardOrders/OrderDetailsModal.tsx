@@ -55,7 +55,6 @@ export function OrderDetailsModal({
                 <TableHead>Name</TableHead>
                 <TableHead>Quantity</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Discount</TableHead>
                 <TableHead>Total</TableHead>
               </TableRow>
             </TableHeader>
@@ -64,11 +63,9 @@ export function OrderDetailsModal({
                 <TableRow key={product.id}>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.quantity}</TableCell>
-                  <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.discount}</TableCell>
+                  <TableCell>{product.discount || product.price}</TableCell>
                   <TableCell>
-                    {(Number(product.price) - Number(product.discount)) *
-                      product.quantity}
+                    {(Number(product.discount || product.price) * product.quantity).toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}

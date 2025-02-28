@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,13 +16,16 @@ import {
 } from '@/components/ui/select';
 import { calculateOrderTotals } from '@/_methods/cart';
 import { CartItem } from '@/_types';
-import { IndianRupee } from 'lucide-react';
+import { IndianRupee, Edit } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { Order } from '@/_types/Order';
+import { Badge } from '@/components/ui/badge';
 
 interface CreateOrderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onOrderCreated?: () => void;
+  existingOrder?: Order;
 }
 
 export const Rupee = () => <IndianRupee className='inline' height={16} width={16} />
@@ -30,15 +33,52 @@ export const Rupee = () => <IndianRupee className='inline' height={16} width={16
 export function CreateOrderModal({ 
   isOpen, 
   onClose, 
-  onOrderCreated 
+  onOrderCreated,
+  existingOrder 
 }: CreateOrderModalProps) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [selectedProducts, setSelectedProducts] = useState<{product: Product, quantity: number}[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [orderStatus, setOrderStatus] = useState('PENDING');
 
   const { products } = useProducts();
+
+  // Initialize form with existing order data when editing
+  useEffect(() => {
+    if (existingOrder) {
+      setName(existingOrder.name);
+      setPhone(existingOrder.phone.toString());
+      setAddress(existingOrder.address);
+      setOrderStatus(existingOrder.status);
+
+      // Convert existing order items to selected products
+      const initialProducts = existingOrder.products.map(orderProduct => {
+        const product = products.find(p => p.id === orderProduct.id);
+        return product 
+          ? { 
+              product, 
+              quantity: orderProduct.quantity 
+            }
+          : null;
+      }).filter(Boolean) as { product: Product; quantity: number }[];
+
+      setSelectedProducts(initialProducts);
+    } else {
+      // Reset form for new order
+      resetForm();
+    }
+  }, [existingOrder, products, isOpen]);
+
+  // Form reset utility
+  const resetForm = () => {
+    setName('');
+    setPhone('');
+    setAddress('');
+    setSelectedProducts([]);
+    setOrderStatus('PENDING');
+  };
 
   const calculateTotals = () => {
     // Convert selected products to cart items
@@ -94,23 +134,34 @@ export function CreateOrderModal({
       discount: totals.discount,
       taxes: totals.taxes,
       total: totals.total,
-      status: 'PENDING'
+      status: orderStatus
     };
 
-    const { error } = await sup
-      .from('guest_orders')
-      .insert(orderData)
-      .select();
+    try {
+      let result;
+      if (existingOrder) {
+        // Update existing order
+        result = await sup
+          .from('guest_orders')
+          .update(orderData)
+          .eq('id', existingOrder.id);
+      } else {
+        // Create new order
+        result = await sup
+          .from('guest_orders')
+          .insert(orderData)
+          .select();
+      }
 
-    setIsSubmitting(false);
+      if (result.error) throw result.error;
 
-    if (error) {
-      console.error('Error creating order:', error);
-      return;
+      onOrderCreated?.();
+      onClose();
+    } catch (error) {
+      console.error('Error saving order:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    onOrderCreated?.();
-    onClose();
   };
 
   const isFormValid = name.trim() !== '' && 
@@ -124,9 +175,27 @@ export function CreateOrderModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create New Order</DialogTitle>
+          <div className="flex items-center space-x-4">
+            <DialogTitle className="flex items-center">
+              {existingOrder ? (
+                <>
+                  <Edit className="mr-2 h-6 w-6 text-primary" />
+                  Edit Order
+                </>
+              ) : (
+                'Create New Order'
+              )}
+            </DialogTitle>
+            {existingOrder && (
+              <Badge variant="outline" className="uppercase">
+                Order #{existingOrder.id}
+              </Badge>
+            )}
+          </div>
           <DialogDescription>
-            Fill in customer details and select products for the order
+            {existingOrder 
+              ? 'Modify the details of the existing order' 
+              : 'Fill in customer details and select products for the order'}
           </DialogDescription>
         </DialogHeader>
 
@@ -163,6 +232,25 @@ export function CreateOrderModal({
                   rows={4}
                 />
               </div>
+              {existingOrder && (
+                <div>
+                  <Label htmlFor="status">Order Status</Label>
+                  <Select 
+                    value={orderStatus}
+                    onValueChange={(value) => setOrderStatus(value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select order status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="PENDING">Pending</SelectItem>
+                      <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                      <SelectItem value="COMPLETED">Completed</SelectItem>
+                      <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
 
@@ -242,7 +330,9 @@ export function CreateOrderModal({
             onClick={handleSubmit} 
             disabled={!isFormValid || isSubmitting}
           >
-            {isSubmitting ? 'Creating...' : 'Create Order'}
+            {isSubmitting 
+              ? (existingOrder ? 'Updating...' : 'Creating...') 
+              : (existingOrder ? 'Update Order' : 'Create Order')}
           </Button>
         </DialogFooter>
       </DialogContent>
