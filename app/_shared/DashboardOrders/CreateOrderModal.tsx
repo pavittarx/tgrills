@@ -6,6 +6,11 @@ import { Button } from '@/components/ui/button';
 import { sup } from '@/_sdk/supabase';
 import { useProducts } from '@/_store/products';
 import { Product } from '@/_types/Product';
+import { calculateOrderTotals } from '@/_methods/cart';
+import { CartItem, Order } from '@/_types';
+import { IndianRupee, Edit } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Select, 
@@ -14,12 +19,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { calculateOrderTotals } from '@/_methods/cart';
-import { CartItem } from '@/_types';
-import { IndianRupee, Edit } from 'lucide-react';
-import { Textarea } from '@/components/ui/textarea';
-import { Order } from '@/_types/Order';
-import { Badge } from '@/components/ui/badge';
 
 interface CreateOrderModalProps {
   isOpen: boolean;
@@ -42,6 +41,7 @@ export function CreateOrderModal({
   const [selectedProducts, setSelectedProducts] = useState<{product: Product, quantity: number}[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderStatus, setOrderStatus] = useState('PENDING');
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
   const { products } = useProducts();
 
@@ -52,6 +52,7 @@ export function CreateOrderModal({
       setPhone(existingOrder.phone.toString());
       setAddress(existingOrder.address);
       setOrderStatus(existingOrder.status);
+      setDeliveryFee(existingOrder.deliveryFee || 0);
 
       // Convert existing order items to selected products
       const initialProducts = existingOrder.products.map(orderProduct => {
@@ -78,6 +79,7 @@ export function CreateOrderModal({
     setAddress('');
     setSelectedProducts([]);
     setOrderStatus('PENDING');
+    setDeliveryFee(0);
   };
 
   const calculateTotals = () => {
@@ -87,7 +89,7 @@ export function CreateOrderModal({
       quantity: item.quantity
     }));
 
-    return calculateOrderTotals(cartItems, products);
+    return calculateOrderTotals(cartItems, products, deliveryFee);
   };
 
   const handleProductSelect = (product: Product) => {
@@ -133,6 +135,7 @@ export function CreateOrderModal({
       subtotal: totals.subtotal,
       discount: totals.discount,
       taxes: totals.taxes,
+      deliveryFee,
       total: totals.total,
       status: orderStatus
     };
@@ -232,6 +235,20 @@ export function CreateOrderModal({
                   rows={4}
                 />
               </div>
+              <div>
+                <Label htmlFor="deliveryFee">Delivery Fee</Label>
+                <Input 
+                  id="deliveryFee"
+                  value={deliveryFee > 0 ? deliveryFee : ''}
+                  onChange={(e) => {
+                    const fee = Number(e.target.value);
+                    if(isNaN(fee)) return;
+                    setDeliveryFee(fee);
+                  }} 
+                  placeholder="Delivery Fee" 
+                  type="text"
+                />
+              </div>
               {existingOrder && (
                 <div>
                   <Label htmlFor="status">Order Status</Label>
@@ -311,6 +328,10 @@ export function CreateOrderModal({
               <p className="flex justify-between">
                 <span>Taxes:</span>
                 <span><Rupee />{totals.taxes.toFixed(2)}</span>
+              </p>
+              <p className="flex justify-between">
+                <span>Delivery Fee:</span>
+                <span><Rupee />{deliveryFee.toFixed(2)}</span>
               </p>
               <p className="flex justify-between font-bold text-lg mt-2">
                 <span>Total:</span>

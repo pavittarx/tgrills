@@ -17,16 +17,18 @@ export const mergeCartAndProducts = (
 
 export const calculateOrderTotals = (
   items: CartItem[],
-  products: Product[]
+  products: Product[],
+  deliveryFee: number = 0
 ) => {
   const totals = items.reduce(
     (accumulator, current) => {
       const product = products.find((p) => p.id === current.id)!;
+      const productPrice = parseFloat(product.discount || product.price) * current.quantity;
 
-      accumulator.subtotal += parseFloat(product.price);
+      accumulator.subtotal += parseFloat(product.price) * current.quantity;
       accumulator.discount +=
-        parseFloat(product.price) - parseFloat(product.discount);
-      accumulator.total += parseFloat(product.discount || product.price);
+        (parseFloat(product.price) - parseFloat(product.discount || product.price)) * current.quantity;
+      accumulator.total += productPrice;
 
       return accumulator;
     },
@@ -34,6 +36,7 @@ export const calculateOrderTotals = (
       subtotal: 0,
       discount: 0,
       discountPct: 0,
+      deliveryFee: deliveryFee,
       taxes: 0,
       total: 0,
     }
@@ -41,7 +44,7 @@ export const calculateOrderTotals = (
 
   totals.discountPct = (totals.discount / totals.subtotal) * 100;
   totals.taxes = totals.total * 0.05;
-  totals.total += totals.taxes;
+  totals.total += totals.taxes + totals.deliveryFee;
 
   return totals;
 };

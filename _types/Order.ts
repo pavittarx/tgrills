@@ -12,7 +12,7 @@ export interface Order {
   id: number;
   created_at: string;
   name: string;
-  email: string | null;
+  email?: string;
   address: string;
   products: {
     id: number;
@@ -27,6 +27,7 @@ export interface Order {
   subtotal: number;
   discount: number;
   taxes: number;
+  deliveryFee: number;
   total: number;
   status: OrderStatus;
   paid: boolean;
