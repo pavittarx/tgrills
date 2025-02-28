@@ -139,7 +139,7 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
     clear();
   }, [hydrated, orderId])
 
-  if (loading) {
+  if (loading || !hydrated) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="animate-pulse">Loading order details...</div>
