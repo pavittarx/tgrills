@@ -1,10 +1,14 @@
 "use client";
-import { useSupUser } from "../_hooks/useSupUser";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { CreateOrderModal } from '@/app/_shared/DashboardOrders/CreateOrderModal';
 import { AdminLogin } from "../_shared/AdminLogin";
-import { OrderDashboard } from "../_shared/DashboardOrders/OrdersTable";
+import { useSupUser } from "../_hooks/useSupUser";
+import { OrderDashboard as OrdersTable } from "../_shared/DashboardOrders/OrdersTable";
 
 const DashboardPage = () => {
   const { isLoading, isLoggedIn, isAdmin, refetch } = useSupUser();
+  const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -29,7 +33,23 @@ const DashboardPage = () => {
     );
   }
 
-  return <OrderDashboard />;
+  return (
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <Button onClick={() => setIsCreateOrderModalOpen(true)}>
+          Create New Order
+        </Button>
+      </div>
+
+      <OrdersTable />
+
+      <CreateOrderModal 
+        isOpen={isCreateOrderModalOpen} 
+        onClose={() => setIsCreateOrderModalOpen(false)}
+      />
+    </div>
+  );
 };
 
 export default DashboardPage;
