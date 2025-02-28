@@ -86,8 +86,7 @@ const triggerWhatsapp = (orderId: string) => {
 
   setTimeout(() => {
     window.open(
-      `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`,
-      // "_blank"
+      `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`
     );
   }, 3000)
 }
