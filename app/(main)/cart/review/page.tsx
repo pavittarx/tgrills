@@ -98,14 +98,7 @@ const OrderReviewPage = () => {
       }
 
         // Use client-side navigation with prefetch
-        router.prefetch(`/orders/${data[0].id}`);
-        
-        // Add a small delay to ensure data is fully processed
-        setTimeout(() => {
-          router.push(`/orders/${data[0].id}`, { 
-            scroll: true  // Ensure scroll to top
-          });
-        }, 100);
+        window.location.assign(`/orders/${data[0].id}`);
 
       // Clear cart and address after successful order
       clearCart();
@@ -150,7 +143,7 @@ const OrderReviewPage = () => {
                     <TableRow>
                       <TableHead>Item</TableHead>
                       <TableHead className="text-right">Qty</TableHead>
-                      <TableHead className="text-right">Price</TableHead>
+                    s  <TableHead className="text-right">Price</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
