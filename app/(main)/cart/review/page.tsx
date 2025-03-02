@@ -37,9 +37,6 @@ const OrderReviewPage = () => {
   const items = mergeCartAndProducts(cart, products);
   const totals = calculateOrderTotals(cart, products);
 
-  const clearAddress = useAddress((s) => s.clear);
-  const clearCart = useCart((s) => s.clear);
-
   useEffect(() => {
     if (!hydrated) {
       return;
@@ -49,6 +46,7 @@ const OrderReviewPage = () => {
     if (!address?.phone) {
       router.push("/cart");
     }
+    
   }, [hydrated]);
 
   const handleOrder = async (trigger: "call" | "whatsapp") => {
@@ -98,11 +96,7 @@ const OrderReviewPage = () => {
       }
 
         // Use client-side navigation with prefetch
-        window.location.assign(`/orders/${data[0].id}`);
-
-      // Clear cart and address after successful order
-      clearCart();
-      clearAddress();
+        router.push(`/orders/${data[0].id}`);
     } catch (error) {
       console.error(error);
 

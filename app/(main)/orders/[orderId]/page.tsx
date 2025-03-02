@@ -22,7 +22,7 @@ import { sup } from "@/_sdk/supabase";
 import { Badge } from "@/components/ui/badge";
 import { getOrderStatusText } from "@/app/_shared/utils/orderStatus";
 import { useHydrated } from "@/app/_hooks";
-import {useTracker} from "@/_store";
+import { useAddress, useCart, useTracker } from "@/_store";
 import { BadgeVariant, OrderStatus } from "@/_types";
 
 interface OrderDetails {
@@ -86,9 +86,7 @@ const triggerWhatsapp = (orderId: string) => {
   );
 
   setTimeout(() => {
-    window.location.assign(
-      `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`
-    );
+    window.location.href = `https://wa.me/${process.env.NEXT_PUBLIC_PHONE_NUMBER}?text=${message}`;
   }, 3000)
 }
 
@@ -99,6 +97,15 @@ export default function OrderPage({ params }: { params: Promise<{ orderId: strin
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isCallClicked, isWhatsappClicked, clear } = useTracker();
+
+  const clearAddress = useAddress((s) => s.clear);
+  const clearCart = useCart((s) => s.clear);
+
+  useEffect(() => {
+    // Clear cart and address after successful order
+    clearCart();
+    clearAddress();
+  }, []);
 
   useEffect(() => {
     const fetchOrder = async () => {
