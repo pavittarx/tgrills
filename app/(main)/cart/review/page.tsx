@@ -97,9 +97,15 @@ const OrderReviewPage = () => {
         trackWhatsapp();
       }
 
-      // Redirect to order details page
-      const url = `/orders/${data[0].id}`;
-      router.push(url);
+        // Use client-side navigation with prefetch
+        router.prefetch(`/orders/${data[0].id}`);
+        
+        // Add a small delay to ensure data is fully processed
+        setTimeout(() => {
+          router.push(`/orders/${data[0].id}`, { 
+            scroll: true  // Ensure scroll to top
+          });
+        }, 100);
 
       // Clear cart and address after successful order
       clearCart();
