@@ -26,7 +26,7 @@ export function OrderDetailsModal({
   onClose,
 }: OrderDetailsModalProps) {
   const restaurantName = process.env.NEXT_PUBLIC_NAME || "Tandoori Grills";
-  const restaurantAddress = process.env.NEXT_PUBLIC_ADDRESS || "Near King Alpha Gym, Near Bijli Colony, Nanakmatta - 262311";
+  const restaurantAddress = process.env.NEXT_PUBLIC_ADDRESS || "Near King Alpha Gym, Bijli Colony, Nanakmatta - 262311";
   const restaurantContact = process.env.NEXT_PUBLIC_PHONE_NUMBER || "+91 1234567890";
 
   return (

@@ -23,7 +23,7 @@ import { sup } from "@/_sdk/supabase";
 import { useAddress, useCart, useProducts, useTracker } from "@/_store";
 import { useHydrated } from "@/app/_hooks";
 import { calculateOrderTotals, mergeCartAndProducts } from "@/_methods/cart";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const OrderReviewPage = () => {
   const router = useRouter();
@@ -33,6 +33,9 @@ const OrderReviewPage = () => {
   const address = useAddress((s) => s.address);
   const trackWhatsapp = useTracker((s) => s.whatsAppClicked);
   const trackCall = useTracker((s) => s.callClicked);
+
+  const [isCallLoading, setIsCallLoading] = useState(false);
+  const [isWhatsappLoading, setIsWhatsappLoading] = useState(false);
 
   const items = mergeCartAndProducts(cart, products);
   const totals = calculateOrderTotals(cart, products);
@@ -50,6 +53,12 @@ const OrderReviewPage = () => {
   }, [hydrated]);
 
   const handleOrder = async (trigger: "call" | "whatsapp") => {
+    if (trigger === "call") {
+      setIsCallLoading(true);
+    } else {
+      setIsWhatsappLoading(true);
+    }
+
     const order = {
       name: address.name,
       phone: address.phone,
@@ -103,6 +112,12 @@ const OrderReviewPage = () => {
       throw new Error("Error Occurred while processing order.", {
         cause: error,
       });
+    } finally {
+      if (trigger === "call") {
+        setIsCallLoading(false);
+      } else {
+        setIsWhatsappLoading(false);
+      }
     }
   };
 
@@ -137,7 +152,7 @@ const OrderReviewPage = () => {
                     <TableRow>
                       <TableHead>Item</TableHead>
                       <TableHead className="text-right">Qty</TableHead>
-                    s  <TableHead className="text-right">Price</TableHead>
+                      <TableHead className="text-right">Price</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -183,16 +198,42 @@ const OrderReviewPage = () => {
           <CardFooter className="flex-col gap-1 w-full select-none">
             <Button
               onClick={() => handleOrder("call")}
+              disabled={isCallLoading || isWhatsappLoading}
               className="w-full bg-yellow-300 text-yellow-800 hover:bg-yellow-200"
             >
-              <Phone className="mr-2 h-4 w-4" /> Order via Call
+              {isCallLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                <>
+                  <Phone className="mr-2 h-4 w-4" /> Order via Call
+                </>
+              )}
             </Button>
             <br />
             <Button
               onClick={() => handleOrder("whatsapp")}
+              disabled={isCallLoading || isWhatsappLoading}
               className="w-full bg-yellow-300 text-yellow-800 hover:bg-yellow-200"
             >
-              <MessageSquare className="mr-2 h-4 w-4" /> Order via WhatsApp
+              {isWhatsappLoading ? (
+                <span className="flex items-center">
+                  <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                <>
+                  <MessageSquare className="mr-2 h-4 w-4" /> Order via WhatsApp
+                </>
+              )}
             </Button>
           </CardFooter>
         </Card>
