@@ -42,6 +42,7 @@ export const Product: FC<ProductProps> = ({
         alt={name}
         width={120}
         height={120}
+        unoptimized
       />
       <div className="w-full">
         <h2 className="text-lg font-semibold text-gray-900">{name}</h2>
