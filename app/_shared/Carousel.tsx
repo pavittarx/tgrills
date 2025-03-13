@@ -50,6 +50,7 @@ export const Carousel: React.FC<PropType> = (props) => {
                   height={150}
                   width={500}
                   alt="Banner"
+                  unoptimized
                 />
               </div>
             </div>
