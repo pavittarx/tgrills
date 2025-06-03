@@ -3,6 +3,7 @@ import { Carousel } from "@/app/_shared/Carousel";
 import { Product } from "@/app/_shared/Product";
 import { useProducts, useBanners, useCategories } from "@/_store";
 import { getCatalogue } from "@/app/_services";
+import { useInitApp } from "../_hooks";
 
 import { useState, useEffect } from "react";
 import classNames from "classnames";
@@ -15,6 +16,8 @@ type Category = {
 };
 
 export default function Home() {
+  useInitApp();
+
   const products = useProducts((s) => s.products);
   const setProducts = useProducts((s) => s.setProducts);
 
@@ -106,28 +109,27 @@ export default function Home() {
       </section>
 
       <div className="grid grid-cols-1 gap-2 mb-4">
-        {products
-          .filter((product) => {
-            if (filters.length > 0) {
-              const res = filters.every((cat) =>
-                product.categories.includes(cat)
-              );
+        {products.filter((product) => {
+          if (filters.length > 0) {
+            const res = filters.every((cat) =>
+              product.categories.includes(cat)
+            );
 
-              return res;
-            }
-            return true;
-          })
-          .length === 0 ? (
+            return res;
+          }
+          return true;
+        }).length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="bg-secondary/10 p-6 rounded-lg max-w-md">
               <h2 className="text-lg font-semibold text-secondary-foreground mb-3">
                 No Items Match Your Filters
               </h2>
               <p className="text-sm text-secondary-foreground/70 mb-4">
-                Try removing some filters or exploring other categories to find what you&apos;re looking for.
+                Try removing some filters or exploring other categories to find
+                what you&apos;re looking for.
               </p>
               {filters.length > 0 && (
-                <button 
+                <button
                   onClick={clearAllFilters}
                   className={classNames(
                     "px-4 py-2 rounded-full",

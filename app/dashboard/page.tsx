@@ -1,14 +1,26 @@
 "use client";
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { CreateOrderModal } from '@/app/_shared/DashboardOrders/CreateOrderModal';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { CreateOrderModal } from "@/app/_shared/DashboardOrders/CreateOrderModal";
+import { getCatalogue } from "../_services";
 import { AdminLogin } from "../_shared/AdminLogin";
 import { useSupUser } from "../_hooks/useSupUser";
 import { OrderDashboard as OrdersTable } from "../_shared/DashboardOrders/OrdersTable";
+import { useInitApp } from "../_hooks";
+import { useProducts } from "@/_store";
 
 const DashboardPage = () => {
+  useInitApp();
   const { isLoading, isLoggedIn, isAdmin, refetch } = useSupUser();
   const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState(false);
+  const setProducts = useProducts((s) => s.setProducts);
+
+  useEffect(() => {
+    (async () => {
+      const { products } = await getCatalogue();
+      setProducts(products);
+    })();
+  }, []);
 
   if (isLoading) {
     return (
@@ -27,7 +39,19 @@ const DashboardPage = () => {
       <div className="h-screen flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-          <p className="text-gray-600">You do not have permission to view this page.</p>
+          <p className="text-gray-600">
+            You do not have permission to view this page.
+          </p>
+          <Button
+            className="m-3 px-5"
+            variant="cart"
+            onClick={() => {
+              localStorage.clear();
+              window.location.reload();
+            }}
+          >
+            Reset
+          </Button>
         </div>
       </div>
     );
@@ -37,15 +61,18 @@ const DashboardPage = () => {
     <div className="p-6 container mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <Button className="mr-2" onClick={() => setIsCreateOrderModalOpen(true)}>
+        <Button
+          className="mr-2"
+          onClick={() => setIsCreateOrderModalOpen(true)}
+        >
           New Order
         </Button>
       </div>
 
       <OrdersTable />
 
-      <CreateOrderModal 
-        isOpen={isCreateOrderModalOpen} 
+      <CreateOrderModal
+        isOpen={isCreateOrderModalOpen}
         onClose={() => setIsCreateOrderModalOpen(false)}
       />
     </div>
